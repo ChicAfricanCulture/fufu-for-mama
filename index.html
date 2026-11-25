@@ -62,6 +62,7 @@ button:focus-visible,.slot:focus-visible{outline:3px solid #1e66f5;outline-offse
 .trip i.now{background:#e0a100}
 .wallet{display:flex;flex-wrap:wrap;gap:5px;align-items:center;font-size:.82rem;min-height:28px}
 .wallet .tot{font-weight:900;font-size:1rem;margin-right:4px}
+.usd{font-weight:600;font-size:.78em;opacity:.62;white-space:nowrap}
 .chip{display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:8px;font-weight:800;border:2px solid transparent}
 .chip.note{background:#d7ecd9;color:#1d4d2a}
 .chip.coin{background:#f3e3b5;color:#5c4300;border-radius:999px}
@@ -123,6 +124,8 @@ canvas.face{display:block;margin:0 auto}
 .rcard .tier{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px}
 .rcard.locked{opacity:.75}
 .share img{width:100%;border-radius:12px;border:1px solid #ead7bf}
+.shbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.shbtns #sh-go{grid-column:1/-1}.shbtns button{min-height:44px}
+button.xbtn{background:#111;color:#fff;box-shadow:0 3px 0 #000}button.fbbtn{background:#1877f2;color:#fff;box-shadow:0 3px 0 #0b4fa8}.shbtns button{font-size:.92rem;padding:10px 8px}
 @media (max-width:380px){.chip{padding:2px 5px;font-size:.72rem}.wallet{gap:3px}.wallet .tot{font-size:.9rem}.bubble .txt{font-size:.85rem}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
@@ -204,6 +207,13 @@ const $=s=>document.querySelector(s);
 const FONT='system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const won=n=>'₩'+n.toLocaleString('en-US');
+/* Approximate US dollars, for players who don't read won. One fixed rate, rounded loosely on purpose. */
+const KRW_PER_USD=1400;
+function usd(n){const v=n/KRW_PER_USD;if(v<10){const h=Math.round(v*2)/2;return '~$'+(h<.5?'0.50':(h%1?h.toFixed(2):String(h)))}return '~$'+Math.round(v)}
+const showUsd=()=>SV.usd!==false;
+const wonU=n=>won(n)+(showUsd()?` <span class="usd">(${usd(n)})</span>`:'');
+const WON_NOTE='Prices are in Korean won. ₩1,000 is about 70 cents.';
+const wonT=n=>won(n)+(showUsd()?` (${usd(n)})`:'');
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const DPR=()=>Math.min(window.devicePixelRatio||1,2.5);
 const now=()=>performance.now();
@@ -211,7 +221,7 @@ const now=()=>performance.now();
 /* ================= SAVE ================= */
 const KEY='fufuForMama.v1';
 function defSave(){let r=false;try{r=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
- return {v:1,best:{},stars:{},recipes:{},faces:{},unlocked:1,seenIntro:false,mute:false,reduced:r,relaxed:false};}
+ return {v:1,best:{},stars:{},recipes:{},faces:{},unlocked:1,seenIntro:false,mute:false,reduced:r,relaxed:false,usd:true};}
 let SV; try{SV=Object.assign(defSave(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){SV=defSave()}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(SV))}catch(e){}}
 function applyReduced(){document.body.classList.toggle('reduced',!!SV.reduced)}
@@ -317,11 +327,11 @@ const ART={
   sp(c,'M30 32 L64 32','#7a5c14',3);ln(c,[[47,78,47,44]],'#7a5c14',2);
   [[42,50],[52,50],[42,58],[52,58],[42,66],[52,66]].forEach((a,i)=>el(c,a[0],a[1],4,2.2,i%2?-.6:.6,'#fff3cf','#7a5c14',1));el(c,47,43,2.2,4,0,'#fff3cf','#7a5c14',1);},
   c(c){heap(c,'#f3ead6','#d6c7a2');}},
- semolina:{w(c){fp(c,'M22 86 C16 70 18 36 24 22 L70 22 C76 36 78 70 72 86Z','#f2c230','#b58f12',2);c.fillStyle='#b58f12';c.fillRect(23,22,47,6);tx(c,'SEMO',47,58,13,'#6e4f00',900);},
+ semolina:{w(c){fp(c,'M22 86 C16 70 18 36 24 22 L70 22 C76 36 78 70 72 86Z','#f2c230','#b58f12',2);c.fillStyle='#b58f12';c.fillRect(23,22,47,6);tx(c,'SEMO',44,44,13,'#6e4f00',900);},
   c(c){heap(c,'#f6d873','#c9a020','#c89a1e');}},
  garri:{w(c){rr(c,14,24,68,60,10);c.fillStyle='#f4ead0';c.fill();c.strokeStyle='#b8a67c';c.lineWidth=2;c.stroke();
   c.fillStyle='#dccb9c';for(let i=0;i<40;i++){c.beginPath();c.arc(18+(i*37)%60,28+(i*53)%52,1.2,0,7);c.fill()}
-  c.fillStyle='#c8312e';c.fillRect(15,44,66,18);tx(c,'GARRI',48,53.5,11,'#fff',900);sp(c,'M14 24 L20 20 L26 24 L32 20 L38 24 L44 20 L50 24 L56 20 L62 24 L68 20 L74 24 L82 21','#b8a67c',1.5);},
+  c.fillStyle='#c8312e';c.fillRect(15,30,66,17);tx(c,'GARRI',46,39,11,'#fff',900);sp(c,'M14 24 L20 20 L26 24 L32 20 L38 24 L44 20 L50 24 L56 20 L62 24 L68 20 L74 24 L82 21','#b8a67c',1.5);},
   c(c){heap(c,'#f4ead0','#cbb98a','#b8a370');}},
  bean:{w(c){fp(c,'M20 86 L24 22 L70 22 L74 86 C60 90 34 90 20 86Z','#a0522d','#6e3519',2);sp(c,'M25 31 L69 31','#f0d9b5',2,[4,3]);
   [[37,55,.4],[55,52,-.3],[46,69,.1]].forEach(a=>{el(c,a[0],a[1],7,5,a[2],'#f4e8cf','#6e3519',1);dt(c,[[a[0]+1,a[1]]],'#1d1d1d',2)});},
@@ -388,11 +398,15 @@ function drawTile(c,id,f){const I=ING[id],F=FRAMES[f];c.save();framePath(c,f,0,0
  drawArt(c,id,(TW-ARTH)/2,1,ARTH);c.fillStyle=I.hue;c.fillRect(0,ARTH,TW,TH-ARTH);
  const lines=I.label;let fs=10.5;c.font=`900 ${fs}px ${FONT}`;while(fs>7.5&&Math.max(...lines.map(l=>c.measureText(l).width))>TW-8){fs-=.5;c.font=`900 ${fs}px ${FONT}`}
  if(lines.length===1)tx(c,lines[0],TW/2,ARTH+14,fs,'#fff',900);else{tx(c,lines[0],TW/2,ARTH+9,fs,'#fff',900);tx(c,lines[1],TW/2,ARTH+20,fs,'#fff',900)}
- tx(c,won(I.price),TW/2,ARTH+34,11.5,'#fff',800);c.restore();
+ if(showUsd()){const p=won(I.price),u=usd(I.price);let f1=11.5,f2=8.5,w1,w2;
+  for(;;){c.font=`800 ${f1}px ${FONT}`;w1=c.measureText(p).width;c.font=`700 ${f2}px ${FONT}`;w2=c.measureText(u).width;if(w1+3+w2<=TW-6||f1<=8.5)break;f1-=.5;f2-=.4}
+  const x0=(TW-w1-3-w2)/2;c.textAlign='left';c.textBaseline='middle';c.font=`800 ${f1}px ${FONT}`;c.fillStyle='#fff';c.fillText(p,x0,ARTH+34);
+  c.font=`700 ${f2}px ${FONT}`;c.fillStyle='rgba(255,255,255,.78)';c.fillText(u,x0+w1+3,ARTH+34.5);}
+ else tx(c,won(I.price),TW/2,ARTH+34,11.5,'#fff',800);c.restore();
  framePath(c,f,1,1,TW-2,TH-2);if(F.dash)c.setLineDash(F.dash);c.lineWidth=I.tier==='gold'?4:2.5;c.strokeStyle=I.tier==='gold'?'#e0a800':(F.bd||I.hue);c.stroke();c.setLineDash([]);
  if(I.tier==='gold'){dt(c,[[15,15]],'#1f1500',12);drawStar(c,15,15,9.5,'#ffd23f','#fff',1)}c.restore();}
 const SPR={};
-function sprite(id,f,sc){const d=DPR()*(sc||1),k=id+'|'+f+'|'+d;if(SPR[k])return SPR[k];const cv=document.createElement('canvas');cv.width=Math.ceil((TW+8)*d);cv.height=Math.ceil((TH+8)*d);
+function sprite(id,f,sc){const d=DPR()*(sc||1),k=id+'|'+f+'|'+d+'|'+showUsd();if(SPR[k])return SPR[k];const cv=document.createElement('canvas');cv.width=Math.ceil((TW+8)*d);cv.height=Math.ceil((TH+8)*d);
  const c=cv.getContext('2d');c.scale(d,d);c.translate(4,4);drawTile(c,id,f);return SPR[k]=cv;}
 function tileCanvas(id,locked,w){const cv=document.createElement('canvas'),d=DPR();cv.width=TW*d;cv.height=TH*d;if(w)cv.style.width=w+'px';const c=cv.getContext('2d');c.scale(d,d);drawTile(c,id,'none');
  if(locked){c.globalCompositeOperation='source-atop';c.fillStyle='#cdbfae';c.fillRect(0,0,TW,TH);c.globalCompositeOperation='source-over';tx(c,'?',TW/2,TH/2,40,'#fff',900)}return cv;}
@@ -404,9 +418,14 @@ function drawMom(c,cx,cy,r,mood){c.save();c.translate(cx,cy);const s=r/100;c.sca
  c.fillStyle='#5e3520';c.fillRect(-16,52,32,30);
  el(c,0,10,58,68,0,'#6b3e26');el(c,-58,14,9,14,0,'#6b3e26');el(c,58,14,9,14,0,'#6b3e26');
  dt(c,[[-60,32,6],[60,32,6]],'#f2b632');
- fp(c,'M-78 -26 C-90 -70 -40 -104 0 -98 C46 -104 96 -76 80 -26 C60 -44 -56 -46 -78 -26Z','#c2185b','#8e0f42',3);
- sp(c,'M-66 -40 C-40 -70 30 -76 70 -42','#f2b632',4);sp(c,'M-54 -60 C-20 -86 30 -88 60 -64','#f2b632',3);
- fp(c,'M58 -60 C86 -86 106 -56 88 -34 C80 -46 70 -52 58 -60Z','#e0337a','#8e0f42',3);
+ /* gele: wrapped snugly round the head, edge on the hairline, small fan + knot on one side */
+ sp(c,'M-57 -2 C-57 -14 -52 -24 -44 -30','#1c0f08',5);sp(c,'M57 -2 C57 -14 52 -24 44 -30','#1c0f08',5);
+ fp(c,'M-65 0 C-78 -42 -52 -86 0 -86 C52 -86 78 -42 65 0 C55 -20 30 -34 0 -34 C-30 -34 -55 -20 -65 0Z','#c2185b','#8e0f42',3);
+ fp(c,'M-62 -14 C-60 -50 -20 -76 34 -74 C10 -62 -34 -44 -52 -4 C-56 -8 -60 -11 -62 -14Z','#9c0f45',null);
+ sp(c,'M-58 -16 C-40 -38 40 -38 58 -16','#f2b632',3.5);sp(c,'M-44 -58 C-18 -72 22 -72 48 -56','#f2b632',3);
+ fp(c,'M-22 -80 C-24 -104 -54 -110 -64 -90 C-64 -78 -46 -72 -22 -80Z','#e0337a','#8e0f42',2.5);
+ sp(c,'M-26 -80 L-46 -102','#8e0f42',1.5);sp(c,'M-28 -79 L-60 -90','#8e0f42',1.5);
+ c.beginPath();c.arc(-22,-78,8,0,7);c.fillStyle='#c2185b';c.fill();c.strokeStyle='#8e0f42';c.lineWidth=2.5;c.stroke();
  const eye='#1c0f08';c.lineCap='round';
  if(mood===1){sp(c,'M-34 2 C-28 7 -20 7 -14 2','#1c0f08',4.5);sp(c,'M14 2 C20 7 28 7 34 2','#1c0f08',4.5);sp(c,'M-36 -12 L-14 -19','#2a170c',5);sp(c,'M14 -19 L36 -12','#2a170c',5);sp(c,'M-12 46 C-4 43 4 43 12 46','#3a1a0e',5);}
  else if(mood===2){dt(c,[[-24,4,6],[24,4,6]],eye);sp(c,'M-36 -14 L-12 -12','#2a170c',5);sp(c,'M12 -20 C22 -26 30 -24 36 -18','#2a170c',5);sp(c,'M-16 44 C-8 40 0 48 8 42 C12 40 16 42 18 44','#3a1a0e',5);}
@@ -462,7 +481,8 @@ function goLevels(){stopAll();show('s-levels');const L=$('#levellist');L.innerHT
   b.onclick=()=>levelCard(n);L.appendChild(b);}
  $('#t-relaxed2').checked=!!SV.relaxed;}
 function levelCard(n){const lv=LEVELS[n];
- modal(`<h2>Level ${n} · ${lv.title}</h2><p>${lv.card}</p>${SV.relaxed?'<p class="pill">Relaxed mode: no clock</p>':'<p class="muted">Mama\'s texts are your clock. When she arrives, you cook.</p>'}
+ const card=lv.card.replace(/₩([\d,]+)/g,(m,v)=>wonU(+v.replace(/,/g,'')));
+ modal(`<h2>Level ${n} · ${lv.title}</h2><p>${card}</p>${n===1?`<p class="muted" style="font-size:.9rem">💱 ${WON_NOTE}</p>`:''}${SV.relaxed?'<p class="pill">Relaxed mode: no clock</p>':'<p class="muted">Mama\'s texts are your clock. When she arrives, you cook.</p>'}
  <div class="row"><button class="alt grow" id="mc-x">Back</button><button class="gold grow" id="mc-go">Start</button></div>`,b=>{b.querySelector('#mc-x').onclick=closeModal;b.querySelector('#mc-go').onclick=()=>{closeModal();startLevel(n)}});}
 
 /* ================= WALLET MATH (Korean won notes and coins) ================= */
@@ -534,7 +554,7 @@ function drawMarket(){const c=mctx,d=DPR()*M.k;c.setTransform(d,0,0,d,0,0);c.cle
   for(const t of l.tiles){const R=tileRect(l,t),ox=t.shake>0?Math.sin(t.shake*60)*4:0,X=R.x+ox;
    if(t.gold){c.save();c.shadowColor='#ffcc00';c.shadowBlur=SV.reduced?14:12+8*Math.sin(tm*6);framePath(c,f,X,R.y,TW,TH);c.fillStyle='#ffd23f';c.fill();c.restore()}
    c.drawImage(sprite(t.id,f,M.k),X-4,R.y-4,TW+8,TH+8);
-   dt(c,[[X+14,R.y+ARTH-13]],'rgba(43,26,16,.55)',11);dt(c,[[X+14,R.y+ARTH-13]],'#fff',9.5);tx(c,'i',X+14,R.y+ARTH-12.5,13,'#1e5fa8',900);
+   {const ix=X+(t.gold?36:12),iy=R.y+12;dt(c,[[ix,iy]],'rgba(43,26,16,.5)',9.5);dt(c,[[ix,iy]],'#fff',8);tx(c,'i',ix,iy+.5,11.5,'#1e5fa8',900);}
    const ok=canAfford(t);
    if(t.exact){const bx=X+TW-47,by=R.y+4;rr(c,bx,by,43,17,8);c.fillStyle=ok?'#ffe066':'#4b5563';c.fill();c.strokeStyle=ok?'#7a5c00':'#1f2937';c.lineWidth=1.2;c.stroke();
     dt(c,[[bx+8.5,by+8.5]],ok?'#c99a00':'#9ca3af',5.5);tx(c,'₩',bx+8.5,by+8.5,7,'#fff',900);tx(c,ok?'EXACT':'EXACT ✕',bx+27,by+8.5,7.5,ok?'#3b2a00':'#fff',900);
@@ -547,7 +567,7 @@ function focusExact(){let best=null,bd=1e9;for(const l of M.lanes)for(const t of
   const cx=R.x+TW/2,cy=R.y+TH/2;if(cx<l.x||cx>l.x+l.w||cy<l.y||cy>l.y+l.h)continue;const dd=l.axis==='x'?Math.abs(cx-(l.x+l.w/2)):Math.abs(cy-(l.y+l.h/2));if(dd<bd){bd=dd;best=t}}
  let use=null,key='';if(best){const p=findPay(M.wallet,ING[best.id].price,true);if(p){use=p.use;key=best.uid+':'+JSON.stringify(use)}else key=best.uid+':x'}
  key+='|'+JSON.stringify(M.wallet);if(key!==M.focusKey){M.focusKey=key;renderWallet(use,best)}}
-function renderWallet(use,ft){const w=M.wallet;let h=`<span class="tot">${won(wTotal(w))}</span>`;
+function renderWallet(use,ft){const w=M.wallet;let h=`<span class="tot">${wonU(wTotal(w))}</span>`;
  for(const d of DEN){const n=w[d]||0;if(!n)continue;const hl=use&&use[d]>0;
   h+=`<span class="chip ${d>=1000?'note':'coin'}${hl?' hl':''}">${won(d)}×${n}${hl?` <span class="need">use ${use[d]}</span>`:''}</span>`}
  if(ft)h+=use?`<span class="chip hl">EXACT ${won(ING[ft.id].price)} ✓</span>`:`<span class="chip" style="background:#eee;color:#555">No coins for ${won(ING[ft.id].price)}</span>`;
@@ -560,15 +580,15 @@ function renderBasket(bounceIdx){const S=$('#slots');S.innerHTML='';for(let i=0;
 function buy(l,t){const I=ING[t.id];
  if(M.basket.length>=5){toast('Basket is full (5). Tap a slot to put one back, or Go cook!');SFX.err();t.shake=.3;return}
  const pay=findPay(M.wallet,I.price,t.exact);
- if(!pay){SFX.err();t.shake=.3;toast(t.exact?`This seller needs exact change: ${won(I.price)}. You don't have those coins.`:`Not enough money for ${I.name} (${won(I.price)}).`,2800);return}
+ if(!pay){SFX.err();t.shake=.3;toast(t.exact?`This seller needs exact change: ${wonT(I.price)}. You don't have those coins.`:`Not enough money for ${I.name} (${wonT(I.price)}).`,2800);return}
  for(const d of DEN)M.wallet[d]-=pay.use[d];addMoney(M.wallet,pay.s-I.price);
  M.basket.push({id:t.id,price:I.price});const R=tileRect(l,t);l.tiles=l.tiles.filter(x=>x!==t);
  M.flyers.push({id:t.id,x:R.x+TW/2,y:R.y+TH/2,tx:M.W*(M.basket.length-.5)/6,ty:M.H+30,t:0});
  SFX.clink();SFX.bounce();const fresh=!SV.recipes[t.id];SV.recipes[t.id]=1;persist();
- toast(`+ ${I.name} · ${won(I.price)}${pay.s>I.price?` · change ${won(pay.s-I.price)}`:''}${fresh?' · 📖 new card!':''}`);say(`Bought ${I.name}`);
+ toast(`+ ${I.name} · ${wonT(I.price)}${pay.s>I.price?` · change ${won(pay.s-I.price)}`:''}${fresh?' · 📖 new card!':''}`);say(`Bought ${I.name}`);
  renderBasket(M.basket.length-1);M.focusKey='';renderMeter();checkCombos(t.id);tut(M.basket.length>=3&&M.tut&&M.tut.meter?'done':'buy');
  if(M.basket.length>=5)setTimeout(()=>{if(M&&!M.ended)toast('Basket full! Tap Go cook 🍲',3000)},1300);}
-function unbuy(i){if(!M||M.ended)return;const it=M.basket.splice(i,1)[0];addMoney(M.wallet,it.price);SFX.bounce();toast(`Put back ${ING[it.id].name}, refunded ${won(it.price)}.`);renderBasket();M.focusKey='';renderMeter();}
+function unbuy(i){if(!M||M.ended)return;const it=M.basket.splice(i,1)[0];addMoney(M.wallet,it.price);SFX.bounce();toast(`Put back ${ING[it.id].name}, refunded ${wonT(it.price)}.`);renderBasket();M.focusKey='';renderMeter();}
 function setStage(s){if(s===M.stage)return;M.stage=s;const t2=M.relaxed?(s===0?'Landed! No rush, I\'m having tea at the airport café ☕':M.L.texts[3]):M.L.texts[s];
  mamaText(t2,s>0);const tr=$('#trip').children;for(let i=0;i<3;i++)tr[i].className=M.relaxed?'':(i<s?'on':i===s?'now':'');$('#trip').style.visibility=M.relaxed?'hidden':'visible';
  faceCanvas($('#mface'),0);}
@@ -580,7 +600,7 @@ function loop(){if(!M||M.ended)return;const tn=now();const dt2=Math.min(.05,(tn-
 function hitTile(e){const r=mcv.getBoundingClientRect(),x=(e.clientX-r.left)/M.k,y=(e.clientY-r.top)/M.k;
  let best=null,bd=1e9;const pad=e.pointerType==='mouse'?8:16;
  for(const l of M.lanes){if(x<l.x-pad||x>l.x+l.w+pad||y<l.y-pad||y>l.y+l.h+pad)continue;for(const t of l.tiles){const R=tileRect(l,t);
-  if(x>=R.x-pad&&x<=R.x+R.w+pad&&y>=R.y-pad&&y<=R.y+R.h+pad){const dd=Math.hypot(x-R.x-TW/2,y-R.y-TH/2);if(dd<bd){bd=dd;best={l,t,info:x-R.x<38&&y-R.y>ARTH-36&&y-R.y<ARTH+6}}}}}
+  if(x>=R.x-pad&&x<=R.x+R.w+pad&&y>=R.y-pad&&y<=R.y+R.h+pad){const dd=Math.hypot(x-R.x-TW/2,y-R.y-TH/2);if(dd<bd){bd=dd;best={l,t,info:x-R.x<(t.gold?52:32)&&y-R.y<32}}}}}
  return best;}
 let PRESS=null;
 mcv.addEventListener('contextmenu',e=>e.preventDefault());
@@ -716,11 +736,11 @@ function chatHistory(){if(!M||M.ended)return;const wasPaused=M.paused;M.paused=t
 function openInfo(l,t){if(!M||M.ended)return;const I=ING[t.id];M.slow=M.relaxed?0:.15;M.info=t;tut('info');
  const tierLine={gold:'★ Gold: the real thing. Rare and pricey.',good:'Good stand-in, especially in a blend.',diff:'Makes a different swallow, not fufu.',wrong:'Wrong category for swallow.',decoy:'Tempting, but not the right texture.'}[I.tier];
  let ex='';if(t.exact){const p=findPay(M.wallet,I.price,true);ex=`<p class="note">🪙 <b>Exact change only.</b> ${p?`You have it: ${DEN.filter(d=>p.use[d]).map(d=>`${won(d)}×${p.use[d]}`).join(' + ')}.`:'You don\'t have the right coins for this one.'}</p>`}
- modal(`<div class="info"><div class="row" style="align-items:flex-start"><div id="if-art" style="width:72px;flex:none"></div><div class="grow"><h2 style="margin:0">${I.name}</h2>${I.ko?`<div class="muted">${I.ko}</div>`:''}<div><b>${won(I.price)}</b></div></div></div>
+ modal(`<div class="info"><div class="row" style="align-items:flex-start"><div id="if-art" style="width:72px;flex:none"></div><div class="grow"><h2 style="margin:0">${I.name}</h2>${I.ko?`<div class="muted">${I.ko}</div>`:''}<div><b>${wonU(I.price)}</b></div></div></div>
  <p style="margin:10px 0 6px">${I.desc}</p>
  <div class="adds"><div><b>Pull:</b> ${pullWord(I.pull)}</div><div><b>Smooth:</b> ${smoothWord(I.sm)}</div><div><b>Taste:</b> ${I.tw}</div></div>
  <p class="muted" style="margin:8px 0">${tierLine}</p>${ex}
- <p class="muted" style="font-size:.8rem;margin:0 0 10px">${M.relaxed?'The rows are paused while this card is open.':'The rows slow down while this card is open. Mama\'s clock keeps going.'}</p>
+ ${showUsd()&&!M.wonNote?(M.wonNote=1,`<p class="muted" style="font-size:.8rem;margin:0 0 6px">💱 ${WON_NOTE}</p>`):''}<p class="muted" style="font-size:.8rem;margin:0 0 10px">${M.relaxed?'The rows are paused while this card is open.':'The rows slow down while this card is open. Mama\'s clock keeps going.'}</p>
  <div class="row"><button class="alt grow" id="if-x">Close</button><button class="gold grow" id="if-buy">Buy ${won(I.price)}</button></div></div>`,b=>{
   b.querySelector('#if-art').appendChild(tileCanvas(t.id,false,72));
   b.querySelector('#if-x').onclick=closeInfo;
@@ -868,9 +888,35 @@ $('#b-serve').onclick=goMom;
 $('#b-retry').onclick=()=>startLevel(M.n);
 $('#b-next').onclick=()=>levelCard(Math.min(3,M.n+1));
 $('#b-home').onclick=goTitle;
-$('#b-share').onclick=()=>{const url=shareCard();modal(`<h2>Your result card</h2><div class="share"><img alt="Result card: Mama said ${LINES[RES.react]}" src="${url}"></div><p class="muted" style="font-size:.85rem">If the download doesn't start, long-press or right-click the image to save it.</p>
- <div class="row"><button class="alt grow" id="sh-x">Close</button><button class="gold grow" id="sh-dl">Download PNG</button></div>`,b=>{b.querySelector('#sh-x').onclick=closeModal;
- b.querySelector('#sh-dl').onclick=()=>{const a=document.createElement('a');a.href=url;a.download='fufu-for-mama-result.png';document.body.appendChild(a);a.click();a.remove();}})};
+const GAME_URL='https://chicafricanculture.github.io/fufu-for-mama/';
+function shareText(){const R=RES,n=M.n,st='⭐'.repeat(R.stars)||'0 stars';
+ const pre=['','Mama went very quiet… 😶','Mama said “So-so.” 😐','Mama smiled: “Good try, my child.” 😊','Mama gave me a star! 🌟 “Yes, my child, you listened.”'][R.react]||'';
+ return `${pre} I scored ${R.score} (${st}) on Level ${n} of Fufu for Mama, shopping a Korean market for Nigerian fufu. What's your fufu? #FufuForMama`;}
+function dataUrlToFile(url,name){try{const [h,b64]=url.split(','),mime=(h.match(/data:([^;]+)/)||[])[1]||'image/png',bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+ return new File([u],name,{type:mime})}catch(e){return null}}
+function copyText(t){if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t).then(()=>true,()=>legacyCopy(t));return Promise.resolve(legacyCopy(t))}
+function legacyCopy(t){try{const a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(a);a.select();const ok=document.execCommand('copy');a.remove();return ok}catch(e){return false}}
+function openOut(u){const w=window.open(u,'_blank','noopener,noreferrer');if(w)try{w.opener=null}catch(e){}}
+$('#b-share').onclick=()=>{const url=shareCard(),txt=shareText(),file=url?dataUrlToFile(url,'fufu-for-mama-result.png'):null;
+ const canFiles=!!(file&&navigator.canShare&&navigator.share&&(()=>{try{return navigator.canShare({files:[file]})}catch(e){return false}})());
+ const canText=!!navigator.share;
+ modal(`<h2>Your result card</h2><div class="share"><img alt="Result card: Mama said ${LINES[RES.react]}" src="${url}"></div>
+ <div class="shbtns">${canFiles||canText?`<button class="gold" id="sh-go">📤 Share${canFiles?' card':''}…</button>`:''}
+ <button class="xbtn" id="sh-xp" aria-label="Post on X (opens a new tab)">𝕏 Post on X</button>
+ <button class="fbbtn" id="sh-fb" aria-label="Share on Facebook (opens a new tab)">f Facebook</button>
+ <button class="alt" id="sh-cp">🔗 Copy link</button>
+ <button class="alt" id="sh-dl">⬇️ Download</button></div>
+ <p class="muted" id="sh-msg" aria-live="polite" style="font-size:.82rem;margin:8px 0">${canFiles?'Share sends the picture to any app on your phone.':'Tip: X and Facebook posts can\'t carry the picture by link. Download it first, then attach it to your post.'}</p>
+ <button class="alt" id="sh-x" style="width:100%">Close</button>`,b=>{const msg=t=>{b.querySelector('#sh-msg').textContent=t};
+ b.querySelector('#sh-x').onclick=closeModal;
+ const go=b.querySelector('#sh-go');if(go)go.onclick=async()=>{const d={title:'Fufu for Mama',text:txt,url:GAME_URL};if(canFiles)d.files=[file];
+  try{await navigator.share(d);msg('Shared! 🎉')}catch(e){if(e&&e.name==='AbortError')return;
+   if(canFiles){try{await navigator.share({title:d.title,text:txt,url:GAME_URL});msg('Shared the link (the picture could not be attached).');return}catch(e2){if(e2&&e2.name==='AbortError')return}}
+   const ok=await copyText(txt+' '+GAME_URL);msg(ok?'Sharing isn\'t available here, so the message and link were copied instead.':'Sharing isn\'t available here. Use Download or Copy link.')}};
+ b.querySelector('#sh-xp').onclick=()=>openOut('https://twitter.com/intent/tweet?text='+encodeURIComponent(txt)+'&url='+encodeURIComponent(GAME_URL));
+ b.querySelector('#sh-fb').onclick=()=>openOut('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(GAME_URL));
+ b.querySelector('#sh-cp').onclick=async()=>{const ok=await copyText(GAME_URL);msg(ok?'Link copied: '+GAME_URL:'Couldn\'t copy. The link is '+GAME_URL)};
+ b.querySelector('#sh-dl').onclick=()=>{const a=document.createElement('a');a.href=url;a.download='fufu-for-mama-result.png';document.body.appendChild(a);a.click();a.remove();msg('Saved. If nothing downloaded, long-press or right-click the image to save it.')};})};
 function shareCard(){const R=RES,cv=document.createElement('canvas');cv.width=1200;cv.height=630;const c=cv.getContext('2d');
  const g=c.createLinearGradient(0,0,1200,630);g.addColorStop(0,'#fff4e0');g.addColorStop(1,'#ffcf94');c.fillStyle=g;c.fillRect(0,0,1200,630);
  c.fillStyle='#1f7a5a';c.fillRect(0,0,1200,26);c.fillStyle='#f2b632';for(let x=13;x<1200;x+=26){c.beginPath();c.arc(x,13,6,0,7);c.fill()}
@@ -903,13 +949,15 @@ function settings(fromPause){modal(`<h2>Settings</h2>
  <label class="toggle"><span><b>Sound</b></span><input type="checkbox" id="st-snd" ${SV.mute?'':'checked'}></label>
  <label class="toggle"><span><b>Reduced motion</b><br><small class="muted">No bounces, pulses or shrinking rings.</small></span><input type="checkbox" id="st-rm" ${SV.reduced?'checked':''}></label>
  <label class="toggle"><span><b>Relaxed mode</b><br><small class="muted">No clock. Applies from the next level you start.</small></span><input type="checkbox" id="st-rx" ${SV.relaxed?'checked':''}></label>
+ <label class="toggle"><span><b>Show ~$ hints</b><br><small class="muted">Rough US dollars next to won prices (₩1,400 ≈ $1).</small></span><input type="checkbox" id="st-usd" ${showUsd()?'checked':''}></label>
  <div class="col" style="margin-top:12px"><button class="gold" id="st-back">${fromPause?'Back to game':'Done'}</button><button class="alt small" id="st-reset">Reset all progress</button></div>
  <p class="muted center" style="font-size:.8rem">Fufu for Mama · By Ivy Newton, The African Gourmet</p>`,b=>{
  b.querySelector('#st-snd').onchange=e=>setMute(!e.target.checked);
  b.querySelector('#st-rm').onchange=e=>{SV.reduced=e.target.checked;persist();applyReduced()};
  b.querySelector('#st-rx').onchange=e=>{SV.relaxed=e.target.checked;persist();$('#t-relaxed2').checked=SV.relaxed};
+ b.querySelector('#st-usd').onchange=e=>{SV.usd=e.target.checked;persist();for(const k in SPR)delete SPR[k];if(M&&!M.ended&&curScreen==='s-market'){M.focusKey='';renderWallet(null,null)}};
  b.querySelector('#st-back').onclick=()=>{closeModal();if(fromPause)resume()};
- b.querySelector('#st-reset').onclick=()=>{if(confirm('Reset stars, scores, recipe cards and Mama\'s faces?')){SV=Object.assign(defSave(),{mute:SV.mute,reduced:SV.reduced});persist();closeModal();goTitle()}};});}
+ b.querySelector('#st-reset').onclick=()=>{if(confirm('Reset stars, scores, recipe cards and Mama\'s faces?')){SV=Object.assign(defSave(),{mute:SV.mute,reduced:SV.reduced,usd:SV.usd});persist();closeModal();goTitle()}};});}
 
 function stopAll(){if(M){M.ended=true;cancelAnimationFrame(raf)}ambStop();if(CK)CK.done=true;introTimers.forEach(clearTimeout);introTimers=[];closeModal();}
 

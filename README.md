@@ -60,6 +60,14 @@ Open `index.html` in any modern browser, on a phone or a computer. It's one file
 
 Tapioca starch *is* cassava starch, but on its own it's gummy ("Close, but too gluey"). Chik is called kudzu starch, not arrowroot.
 
+## What's new in v1.2
+
+- **Share your result.** The result card now has a **Share** button that sends the card picture, a short message and the game link through your phone's share sheet (Web Share API). Where that isn't supported, the button hides itself, and the message and link are copied instead if sharing fails.
+- **Post on X** and **Facebook** buttons open a new tab with a ready-made post (your score, Mama's reaction and #FufuForMama). **Copy link** and **Download** are there too. Nothing is contacted until you tap one of them.
+- **Dollar hints.** Prices are still in Korean won, but tiles, the wallet, the info card and the money toasts show a rough US dollar amount, like ₩3,000 (~$2). It uses one fixed rate (₩1,400 ≈ $1), rounded to the nearest 50 cents, or to whole dollars from $10 up. You can turn the hints off under ⚙️ Settings → *Show ~$ hints*.
+- **Mama's gele fits better.** Her head wrap now sits snugly on her hairline and wraps around the sides of her head, with a small knot and fan, instead of perching on top.
+- **Cleaner tiles.** The ⓘ badge moved to the top corner so it no longer covers the picture, and the Garri and Semo bag labels no longer hide behind the cut slice.
+
 ## What's new in v1.1
 
 - **Ingredient info card:** press and hold a tile (about 0.4 s), or tap its **ⓘ** badge. The card shows the name, a plain one-line description, what the ingredient adds (Pull, Smooth, Taste in words), the price and any exact-change note, and you can buy from it. A plain tap still buys right away. While the card is open the rows slow down a lot, or stop in relaxed mode. Mama's clock keeps running.
