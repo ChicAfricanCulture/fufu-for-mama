@@ -60,6 +60,15 @@ Open `index.html` in any modern browser, on a phone or a computer. It's one file
 
 Tapioca starch *is* cassava starch, but on its own it's gummy ("Close, but too gluey"). Chik is called kudzu starch, not arrowroot.
 
+## What's new in v1.1
+
+- **Ingredient info card:** press and hold a tile (about 0.4 s), or tap its **ⓘ** badge. The card shows the name, a plain one-line description, what the ingredient adds (Pull, Smooth, Taste in words), the price and any exact-change note, and you can buy from it. A plain tap still buys right away. While the card is open the rows slow down a lot, or stop in relaxed mode. Mama's clock keeps running.
+- **Basket meter:** live Pull, Smooth and Taste bars, plus a one-line verdict that updates as you shop (for example "Good pull, but needs something smooth").
+- **Mama's hint texts:** each level opens with a shopping goal, and she nudges you twice mid-shop based on your basket. The texts are part of the same clock. Tap her bubble to reread them.
+- **Combo pop-ups:** good pairs and blends ("Yam + cassava = classic pull!") and gentle warnings ("Bean flour is for moin moin, not swallow", "Too much tapioca gets gluey").
+- **Level 1 tutorial:** it teaches the info card, buying and the meter.
+- Smoothness now depends on the ingredients' smoothness potential (garri and tteok come out grainy or firm) as well as your cooking.
+
 ## Coming later (deferred from v1)
 
 - **Daily market:** a date-seeded shopping list, the same for every player that day

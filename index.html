@@ -67,8 +67,31 @@ button:focus-visible,.slot:focus-visible{outline:3px solid #1e66f5;outline-offse
 .chip.coin{background:#f3e3b5;color:#5c4300;border-radius:999px}
 .chip.hl{border-color:#1e66f5;background:#dbe8ff;color:#0b3a9e}
 .chip .need{background:#1e66f5;color:#fff;border-radius:6px;padding:0 4px;font-size:.72rem}
-#mcv{width:100%;flex:1;min-height:180px;touch-action:none;border-radius:14px;display:block;background:#efd9b4}
-#toast{height:40px;overflow:hidden;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:.9rem;font-weight:700;text-align:center;color:#5a2a10}
+.mwrap{position:relative;flex:1;min-height:180px}
+#mcv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;border-radius:14px;display:block;background:#efd9b4;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.coach{position:absolute;left:8px;right:8px;top:8px;display:none;align-items:center;gap:8px;background:#1f2937;color:#fff;border-radius:12px;padding:8px 8px 8px 12px;font-size:.92rem;font-weight:700;line-height:1.25;box-shadow:0 4px 12px #0004;z-index:3}
+.coach.on{display:flex}
+.coach span{flex:1}
+.coach button{min-height:34px;width:34px;padding:0;border-radius:50%;background:#374151;box-shadow:none}
+.combo{position:absolute;left:0;right:0;margin:0 auto;width:fit-content;bottom:10px;max-width:92%;display:none;padding:9px 14px;border-radius:999px;font-weight:800;font-size:.95rem;text-align:center;box-shadow:0 4px 12px #0003;pointer-events:none;z-index:3}
+.combo.on{display:block;animation:pop .25s ease-out both}
+.reduced .combo.on{animation:none}
+.combo.good{background:#2f7d4a;color:#fff}
+.combo.warn{background:#fff3c4;color:#5a3b00;border:2px solid #d99a00}
+.meter{background:#fff;border-radius:12px;padding:5px 8px;box-shadow:0 2px 0 #e0caa8;border:2px solid transparent}
+.meter.ring{border-color:#1e66f5}
+.meter.glow{animation:pls 1s ease-in-out 3}
+.mbars{display:flex;gap:8px}
+.mb{flex:1;display:flex;align-items:center;gap:5px;font-size:.75rem;font-weight:800}
+.mb .bar{flex:1;height:9px;border-radius:5px;background:#efe3d0;overflow:hidden;border:1px solid #d9c3a8}
+.mb .bar i{display:block;height:100%;background:repeating-linear-gradient(90deg,#7a2e12 0 8px,#9a4520 8px 10px);transition:width .3s}
+.reduced .mb .bar i{transition:none}
+.verdict{font-size:.85rem;font-weight:700;margin-top:3px;line-height:1.2}
+.verdict.good{color:#1f6b3a}.verdict.warn{color:#8a4b00}.verdict.info{color:#4b3a2c}
+.info .adds{background:#fff;border:1px solid #ead7bf;border-radius:12px;padding:8px 12px;line-height:1.5}
+.info .note{background:#fff7d1;border-radius:10px;padding:8px 10px;margin:6px 0}
+#mbubble{cursor:pointer}
+#toast{height:34px;overflow:hidden;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:.9rem;font-weight:700;text-align:center;color:#5a2a10}
 .basket{display:flex;gap:6px;align-items:center}
 .slots{display:flex;gap:5px;flex:1}
 .slot{flex:1;aspect-ratio:4/5;max-width:64px;border-radius:12px;background:#fff8ec;border:2px dashed #d6b98f;display:grid;place-items:center;padding:0;min-height:0;box-shadow:none;color:var(--muted);font-size:.7rem;overflow:hidden}
@@ -135,11 +158,14 @@ canvas.face{display:block;margin:0 auto}
 
  <section id="s-market" class="screen" aria-label="Market">
   <div class="mhead">
-   <div class="bubble"><canvas id="mface" width="36" height="36" aria-hidden="true"></canvas>
+   <div class="bubble" id="mbubble" role="button" tabindex="0" aria-label="Mama's texts. Tap to read them all."><canvas id="mface" width="36" height="36" aria-hidden="true"></canvas>
     <div class="grow"><div class="who">Mama</div><div class="txt" id="mtxt" aria-live="polite"></div><div class="trip" id="trip"><i></i><i></i><i></i></div></div></div>
   </div>
   <div class="wallet" id="wallet" aria-label="Wallet"></div>
-  <canvas id="mcv" aria-label="Market stalls. Tap an ingredient to buy it."></canvas>
+  <div class="mwrap"><canvas id="mcv" aria-label="Market stalls. Tap an ingredient to buy it. Press and hold, or tap its info badge, to read about it."></canvas>
+   <div class="coach" id="coach" aria-live="polite"><span id="coachtxt"></span><button id="coachx" aria-label="Hide tip">✕</button></div>
+   <div class="combo" id="combo" aria-live="polite"></div></div>
+  <div class="meter" id="meter" aria-label="Basket meter"><div class="mbars" id="meterbars"></div><div class="verdict" id="verdict" aria-live="polite"></div></div>
   <div id="toast" aria-live="polite"></div>
   <div class="basket"><div class="slots" id="slots"></div><button id="b-cook" class="small">Go cook 🍲</button></div>
  </section>
@@ -397,7 +423,7 @@ const LEVELS={
  1:{title:'First trip',sub:'Tutorial · one slow row · grab what you like',time:90,beat:900,wallet:{10000:4,5000:2,1000:8,500:4},exact:0,goldGap:7,
   lanes:[{dir:'right',T:6.5,frame:'none',name:'NEIGHBORHOOD MARKET',pool:{ma:3,sweetpot:3,potato:3,potstarch:3,glutinous:2,wheat:2,tteok:2,puna:.7,cassava:.7}}],
   texts:['Just landed! At baggage claim 😊','In the taxi. Remember, fufu must PULL when you tear it.','Five minutes, my child.','Taxi is outside your building!'],
-  card:'Tap any tile to drop it in your basket. Your basket holds 5, and you can tap a basket slot to put something back. Gold tiles with a ★ are the real thing: rare, pricey and quick. Tap <b>Go cook</b> when you\'re ready.'},
+  card:'Tap any tile to drop it in your basket. <b>Press and hold</b> a tile, or tap its <b>ⓘ</b>, to read what it adds. The <b>meter</b> under the market shows your Pull, Smooth and Taste, and Mama will text you hints. Your basket holds 5 (tap a slot to put something back). Gold tiles with a ★ are the real thing: rare, pricey and quick.'},
  2:{title:'Tight budget',sub:'Two rows, opposite ways · exact-change sellers',time:60,beat:820,wallet:{10000:1,5000:1,1000:5,500:4},exact:.3,goldGap:8,
   lanes:[{dir:'right',T:3.4,frame:'none',name:'PRODUCE & SNACKS',pool:{ma:3,sweetpot:3,potato:3,toran:3,tteok:2,tapioca:2,cassava:.6,plantain:.6}},
          {dir:'left',T:3.4,frame:'none',name:'FLOUR & STARCH',pool:{potstarch:3,glutinous:3,tapioca:2,kudzu:2,wheat:2,bean:2,puna:.6}}],
@@ -452,10 +478,10 @@ function addMoney(w,amt){for(const d of DEN){while(amt>=d){w[d]=(w[d]||0)+1;amt-
 let M=null,raf=0;
 const mcv=$('#mcv'),mctx=mcv.getContext('2d');
 function startLevel(n){stopAll();const L=LEVELS[n];
- M={n,L,relaxed:!!SV.relaxed,wallet:Object.assign({},L.wallet),basket:[],t:0,dur:L.time,lanes:[],seen:{},goldT:-99,goldN:0,stage:-1,ended:false,paused:false,flyers:[],last:0,focusKey:'',uid:0};
- show('s-market');faceCanvas($('#mface'),0);renderBasket();
+ M={n,L,relaxed:!!SV.relaxed,wallet:Object.assign({},L.wallet),basket:[],t:0,dur:L.time,lanes:[],seen:{},goldT:-99,goldN:0,stage:-1,ended:false,paused:false,flyers:[],last:0,focusKey:'',uid:0,slow:1,chat:[],hints:{},fired:{},info:null,tut:n===1?{}:null};
+ show('s-market');faceCanvas($('#mface'),0);renderBasket();renderMeter();coach(n===1?'start':null);$('#combo').className='combo';
  requestAnimationFrame(()=>{if(!M||M.n!==n)return;layoutMarket(true);renderWallet();setStage(0);
-  toast(n===1?'Tap any tile to buy it. Your basket holds 5.':n===2?'Watch for EXACT badges: the right coins light up blue.':'Find the Itaewon African shop coming down the side.',4500);
+  toast(n===1?'Tap to buy. Press and hold to learn.':n===2?'Watch for EXACT badges: the right coins light up blue.':'Find the Itaewon African shop coming down the side.',4500);
   ambStart();M.last=now();loop();});}
 function layoutMarket(fill){if(!M)return;const r=mcv.getBoundingClientRect(),d=DPR();const W0=Math.max(200,r.width),H0=Math.max(160,r.height);const LH=TH+24,cfg=M.L.lanes;
  mcv.width=Math.round(W0*d);mcv.height=Math.round(H0*d);
@@ -508,6 +534,7 @@ function drawMarket(){const c=mctx,d=DPR()*M.k;c.setTransform(d,0,0,d,0,0);c.cle
   for(const t of l.tiles){const R=tileRect(l,t),ox=t.shake>0?Math.sin(t.shake*60)*4:0,X=R.x+ox;
    if(t.gold){c.save();c.shadowColor='#ffcc00';c.shadowBlur=SV.reduced?14:12+8*Math.sin(tm*6);framePath(c,f,X,R.y,TW,TH);c.fillStyle='#ffd23f';c.fill();c.restore()}
    c.drawImage(sprite(t.id,f,M.k),X-4,R.y-4,TW+8,TH+8);
+   dt(c,[[X+14,R.y+ARTH-13]],'rgba(43,26,16,.55)',11);dt(c,[[X+14,R.y+ARTH-13]],'#fff',9.5);tx(c,'i',X+14,R.y+ARTH-12.5,13,'#1e5fa8',900);
    const ok=canAfford(t);
    if(t.exact){const bx=X+TW-47,by=R.y+4;rr(c,bx,by,43,17,8);c.fillStyle=ok?'#ffe066':'#4b5563';c.fill();c.strokeStyle=ok?'#7a5c00':'#1f2937';c.lineWidth=1.2;c.stroke();
     dt(c,[[bx+8.5,by+8.5]],ok?'#c99a00':'#9ca3af',5.5);tx(c,'₩',bx+8.5,by+8.5,7,'#fff',900);tx(c,ok?'EXACT':'EXACT ✕',bx+27,by+8.5,7.5,ok?'#3b2a00':'#fff',900);
@@ -539,31 +566,178 @@ function buy(l,t){const I=ING[t.id];
  M.flyers.push({id:t.id,x:R.x+TW/2,y:R.y+TH/2,tx:M.W*(M.basket.length-.5)/6,ty:M.H+30,t:0});
  SFX.clink();SFX.bounce();const fresh=!SV.recipes[t.id];SV.recipes[t.id]=1;persist();
  toast(`+ ${I.name} · ${won(I.price)}${pay.s>I.price?` · change ${won(pay.s-I.price)}`:''}${fresh?' · 📖 new card!':''}`);say(`Bought ${I.name}`);
- renderBasket(M.basket.length-1);M.focusKey='';
+ renderBasket(M.basket.length-1);M.focusKey='';renderMeter();checkCombos(t.id);tut(M.basket.length>=3&&M.tut&&M.tut.meter?'done':'buy');
  if(M.basket.length>=5)setTimeout(()=>{if(M&&!M.ended)toast('Basket full! Tap Go cook 🍲',3000)},1300);}
-function unbuy(i){if(!M||M.ended)return;const it=M.basket.splice(i,1)[0];addMoney(M.wallet,it.price);SFX.bounce();toast(`Put back ${ING[it.id].name}, refunded ${won(it.price)}.`);renderBasket();M.focusKey='';}
+function unbuy(i){if(!M||M.ended)return;const it=M.basket.splice(i,1)[0];addMoney(M.wallet,it.price);SFX.bounce();toast(`Put back ${ING[it.id].name}, refunded ${won(it.price)}.`);renderBasket();M.focusKey='';renderMeter();}
 function setStage(s){if(s===M.stage)return;M.stage=s;const t2=M.relaxed?(s===0?'Landed! No rush, I\'m having tea at the airport café ☕':M.L.texts[3]):M.L.texts[s];
- $('#mtxt').textContent=t2;const tr=$('#trip').children;for(let i=0;i<3;i++)tr[i].className=M.relaxed?'':(i<s?'on':i===s?'now':'');$('#trip').style.visibility=M.relaxed?'hidden':'visible';
- if(s>0)SFX.ping();faceCanvas($('#mface'),0);}
+ mamaText(t2,s>0);const tr=$('#trip').children;for(let i=0;i<3;i++)tr[i].className=M.relaxed?'':(i<s?'on':i===s?'now':'');$('#trip').style.visibility=M.relaxed?'hidden':'visible';
+ faceCanvas($('#mface'),0);}
 function loop(){if(!M||M.ended)return;const tn=now();const dt2=Math.min(.05,(tn-M.last)/1000);M.last=tn;
- if(!M.paused){M.t+=dt2;for(const l of M.lanes)laneStep(l,dt2);M.flyers.forEach(f=>f.t+=dt2);M.flyers=M.flyers.filter(f=>f.t<.45);
+ if(!M.paused){M.t+=dt2;for(const l of M.lanes)laneStep(l,dt2*M.slow);hintTick();M.flyers.forEach(f=>f.t+=dt2);M.flyers=M.flyers.filter(f=>f.t<.45);
   if(!M.relaxed){const k=M.t/M.dur;setStage(k>=1?3:k>=.8?2:k>=.45?1:0);if(k>=1){drawMarket();endShopping('time');return}}
   focusExact();drawMarket();}
  raf=requestAnimationFrame(loop);}
-mcv.addEventListener('pointerdown',e=>{if(!M||M.ended||M.paused)return;e.preventDefault();ac();const r=mcv.getBoundingClientRect(),x=(e.clientX-r.left)/M.k,y=(e.clientY-r.top)/M.k;
+function hitTile(e){const r=mcv.getBoundingClientRect(),x=(e.clientX-r.left)/M.k,y=(e.clientY-r.top)/M.k;
  let best=null,bd=1e9;const pad=e.pointerType==='mouse'?8:16;
  for(const l of M.lanes){if(x<l.x-pad||x>l.x+l.w+pad||y<l.y-pad||y>l.y+l.h+pad)continue;for(const t of l.tiles){const R=tileRect(l,t);
-  if(x>=R.x-pad&&x<=R.x+R.w+pad&&y>=R.y-pad&&y<=R.y+R.h+pad){const dd=Math.hypot(x-R.x-TW/2,y-R.y-TH/2);if(dd<bd){bd=dd;best=[l,t]}}}}
- if(best)buy(best[0],best[1]);});
+  if(x>=R.x-pad&&x<=R.x+R.w+pad&&y>=R.y-pad&&y<=R.y+R.h+pad){const dd=Math.hypot(x-R.x-TW/2,y-R.y-TH/2);if(dd<bd){bd=dd;best={l,t,info:x-R.x<38&&y-R.y>ARTH-36&&y-R.y<ARTH+6}}}}}
+ return best;}
+let PRESS=null;
+mcv.addEventListener('contextmenu',e=>e.preventDefault());
+mcv.addEventListener('pointerdown',e=>{if(!M||M.ended||M.paused||M.info)return;e.preventDefault();ac();const h=hitTile(e);if(!h)return;
+ if(h.info){openInfo(h.l,h.t);return}
+ if(PRESS)clearTimeout(PRESS.timer);const p=PRESS={l:h.l,t:h.t,id:e.pointerId,done:false};
+ p.timer=setTimeout(()=>{if(PRESS===p&&!p.done&&M&&!M.ended&&!M.paused){p.done=true;openInfo(p.l,p.t)}},400);});
+function endPress(e,buyIt){if(!PRESS||PRESS.id!==e.pointerId)return;clearTimeout(PRESS.timer);const p=PRESS;PRESS=null;
+ if(!p.done&&buyIt&&M&&!M.ended&&!M.paused&&!M.info){if(p.l.tiles.includes(p.t))buy(p.l,p.t);else toast('Too late, it rolled past!')}}
+mcv.addEventListener('pointerup',e=>endPress(e,true));
+mcv.addEventListener('pointercancel',e=>endPress(e,false));
 function endShopping(reason){if(!M||M.ended)return;M.ended=true;cancelAnimationFrame(raf);ambStop();
  if(reason==='time'){SFX.ping();modal(`<h2>Mama is here! 🚕</h2><p>${M.basket.length?'No more shopping. Time to cook what you have!':'Your basket is empty… Mama is at the door anyway.'}</p><button class="gold" id="mc-c" style="width:100%">${M.basket.length?'Cook!':'Open the door'}</button>`,b=>b.querySelector('#mc-c').onclick=()=>{closeModal();afterShop()});}
  else afterShop();}
 function afterShop(){if(M.basket.length)startCook();else{M.S=0;goTaste()}}
 $('#b-cook').onclick=()=>{if(!M||M.ended)return;if(!M.basket.length){M.paused=true;modal(`<h2>Empty basket</h2><p>You haven't bought anything yet. Go home with nothing?</p><div class="row"><button class="alt grow" id="mc-n">Keep shopping</button><button class="grow" id="mc-y">Go home</button></div>`,b=>{b.querySelector('#mc-n').onclick=()=>{closeModal();resume()};b.querySelector('#mc-y').onclick=()=>{closeModal();endShopping('done')}});return}endShopping('done')};
-function pause(){if(!M||M.ended||M.paused)return;M.paused=true;
+function pause(){if(!M||M.ended||M.paused)return;if(M.info)closeInfo();M.paused=true;
  modal(`<h2>Paused</h2><div class="col"><button class="gold" id="p-r">Resume</button><button class="alt" id="p-s">Settings</button><button class="alt" id="p-re">Restart level</button><button class="alt" id="p-q">Quit to levels</button></div>`,b=>{
   b.querySelector('#p-r').onclick=()=>{closeModal();resume()};b.querySelector('#p-s').onclick=()=>settings(true);b.querySelector('#p-re').onclick=()=>{const n=M.n;closeModal();startLevel(n)};b.querySelector('#p-q').onclick=()=>{closeModal();goLevels()}});}
 function resume(){if(!M)return;M.paused=false;M.last=now();}
+/* ================= v1.1: INGREDIENT PROFILE, METER, INFO CARD, COMBOS, MAMA'S HINTS, TUTORIAL ================= */
+/* sm = smoothness potential 0-3 (how smooth a dough it can make); desc = one plain line; tw = taste in words */
+const EXTRA={
+ puna:[2.5,'A big West African white yam, the classic for pounded yam.','rich, earthy yam'],
+ cassava:[2.5,'A starchy root. Soaked and fermented, it is the base of much Nigerian fufu.','mild, gently sour when fermented'],
+ plantain:[2,'Green plantain, boiled and pounded, makes a firm, earthy swallow.','earthy, a little sweet'],
+ fufu:[3,'Packaged fufu flour, a shortcut many cooks abroad use.','familiar fufu taste'],
+ ma:[2.5,'Korean yam, a cousin of the African yams.','mild, earthy yam'],
+ potstarch:[3,'Pure potato starch. It adds stretch and helps the dough come out smooth.','plain, neutral'],
+ glutinous:[2.5,'Sticky rice flour, used for chewy Korean rice cakes.','mild rice; chewy'],
+ sweetpot:[2,'Korean sweet potato: soft, and very sweet.','sweet'],
+ tapioca:[3,'Cassava starch. Lots of stretch, but gummy on its own.','neutral'],
+ toran:[2.5,'Korean taro, one of the plants Nigerians call cocoyam.','mild, earthy'],
+ kudzu:[3,'Kudzu root starch, used in East Asia for jellies and sauces.','neutral'],
+ wheat:[2,'Makes wheat meal, a different Nigerian swallow.','wheaty, a little nutty'],
+ semolina:[2.5,'Makes semo, a different Nigerian swallow.','mild'],
+ garri:[1,'Roasted cassava granules. They make eba, not fufu.','sour, toasty'],
+ bean:[1,'Bean flour for moin moin and akara. Not a swallow.','beany'],
+ tteok:[1,'Korean rice cake. Pounded, but it sets firm and chewy.','mild rice'],
+ potato:[2,'Regular potato: soft, but it won\'t pull on its own.','plain potato']};
+for(const k in EXTRA){const e=EXTRA[k];Object.assign(ING[k],{sm:e[0],desc:e[1],tw:e[2]})}
+const GOODTIER=i=>ING[i].tier==='gold'||ING[i].tier==='good';
+const pullWord=v=>v<=0?'none':v<=1?'weak':v<=2?'medium':v<3?'good':'strong';
+const smoothWord=v=>v<=1?'grainy or firm':v<=1.5?'a bit rough':v<=2?'fairly smooth':v<3?'smooth':'very smooth';
+function profile(ids){const cnt={},con={};let W=0,P=0,T=0,Sm=0;
+ for(const id of ids){const n=cnt[id]=(cnt[id]||0)+1,w=Math.pow(.5,n-1);W+=w;P+=w*ING[id].pull;T+=w*ING[id].taste;Sm+=w*ING[id].sm;con[id]=(con[id]||0)+w}
+ if(!ids.length)return {empty:true,W:0,P:0,T:0,Sm:0,cnt,con,distinct:0,enough:0};
+ P/=W;T/=W;Sm/=W;const fr=a=>a.reduce((s,i)=>s+(con[i]||0),0)/W;
+ const sweet=fr(['sweetpot']),gluey=fr(['tapioca']),chewy=fr(['glutinous']),tteok=fr(['tteok']),beany=fr(['bean']),jelly=fr(['kudzu']),pot=fr(['potato']);
+ const diffIds=['wheat','semolina','garri'],diff=fr(diffIds);
+ const distinct=Object.keys(cnt).filter(i=>GOODTIER(i)&&ING[i].pull+ING[i].taste>=4).length;
+ if(sweet>.34)T-=.6;if(beany>0)T-=3.6*beany;
+ if(gluey>=.5)P=Math.min(P,1.6);if(chewy>=.5)P=Math.min(P,2);if(jelly>=.5)P=Math.min(P,1.5);if(tteok>=.4)P=Math.min(P,1.5);
+ if(beany>0)Sm=Math.min(Sm,2);
+ P=clamp(P,0,3);T=clamp(T,0,3);Sm=clamp(Sm,0,3);
+ const enough=Math.min(1,W/1.75);
+ const top=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0],mono=Object.keys(cnt).length===1&&cnt[top]>=3&&GOODTIER(top);
+ const domDiff=diff>=.5?diffIds.reduce((a,i)=>(con[i]||0)>(con[a]||0)?i:a,'wheat'):null;
+ return {empty:false,W,P,T,Sm,cnt,con,sweet,gluey,chewy,tteok,beany,jelly,pot,diff,distinct,enough,top,mono,domDiff};}
+function verdict(p){
+ if(p.empty)return {code:'empty',kind:'info',text:'Empty. Aim for pull, smoothness and taste.'};
+ if(p.beany>0)return {code:'bean',kind:'warn',text:'Bean flour won\'t make swallow.'};
+ if(p.domDiff)return {code:'diff',kind:'warn',text:`That's ${p.domDiff==='garri'?'eba':p.domDiff==='semolina'?'semo':'wheat meal'}, a different swallow.`};
+ if(p.gluey>=.5&&p.W>1)return {code:'gluey',kind:'warn',text:'Too much tapioca: it will be gluey.'};
+ if(p.tteok>=.4)return {code:'tteok',kind:'warn',text:'Tteok sets chewy, not soft.'};
+ if(p.sweet>.34)return {code:'sweet',kind:'warn',text:'Getting sweet. Add a plain starch or tuber.'};
+ if(p.jelly>=.5&&p.W>1)return {code:'jelly',kind:'warn',text:'Kudzu alone goes jelly-like.'};
+ if(p.chewy>=.5&&p.W>1)return {code:'chewy',kind:'warn',text:'Rice flour alone is chewy.'};
+ if(p.mono)return {code:'mono',kind:'warn',text:'All one thing. A blend would be better.'};
+ if(p.P<1.7)return {code:'pull',kind:'info',text:'Needs more pull. Try a starch or a yam.'};
+ if(p.Sm<2.2)return {code:'smooth',kind:'info',text:'Good pull, but needs something smooth.'};
+ if(p.T<1.5)return {code:'taste',kind:'info',text:'Pulls, but tastes plain. Add a real tuber.'};
+ if(p.W<1.5)return {code:'more',kind:'info',text:'Good start! You need more to fill the pot.'};
+ if(p.distinct<2)return {code:'blend',kind:'info',text:'Good. A second good starch would balance it.'};
+ return {code:'ok',kind:'good',text:'Balanced! Mama will like this.'};}
+
+/* ---------- basket meter ---------- */
+function renderMeter(){if(!M)return;const p=profile(M.basket.map(b=>b.id)),v=verdict(p);M.verdict=v;
+ const bars=[['Pull',p.P,pullWord(p.P)],['Smooth',p.Sm,smoothWord(p.Sm)],['Taste',p.T,p.T>=2.4?'like home':p.T>=1.5?'close':p.T>0?'off':'—']];
+ $('#meterbars').innerHTML=bars.map(b=>`<div class="mb" role="img" aria-label="${b[0]}: ${p.empty?'nothing yet':b[2]}"><span class="ml">${b[0]}</span><span class="bar"><i style="width:${Math.round(b[1]/3*100)}%"></i></span></div>`).join('');
+ const vd=$('#verdict');vd.className='verdict '+v.kind;vd.textContent=(v.kind==='good'?'✓ ':v.kind==='warn'?'⚠ ':'• ')+v.text;}
+
+/* ---------- combo pop-ups ---------- */
+const TUBERS=['puna','ma','toran','cassava','potato','plantain'];
+const WARN=[
+ [id=>id==='bean','Bean flour is for moin moin, not swallow.'],
+ [(id,c,p)=>id==='tapioca'&&(c.tapioca>=2||(p.gluey>=.5&&p.W>1)),'Too much tapioca gets gluey.'],
+ [(id,c,p)=>id==='sweetpot'&&p.sweet>.34&&p.W>1,'Too much sweet potato makes it sweet.'],
+ [id=>id==='tteok','Tteok is pounded too, but it sets firm and chewy.'],
+ [(id,c)=>id==='kudzu'&&c.kudzu>=2,'Kudzu alone goes wobbly, like jelly.'],
+ [(id,c)=>id==='glutinous'&&c.glutinous>=2,'Too much rice flour turns chewy, like mochi.'],
+ [id=>id==='garri','Garri makes eba: a real swallow, just not fufu.'],
+ [id=>id==='semolina','Semolina makes semo: a different swallow.'],
+ [id=>id==='wheat','Wheat flour makes wheat meal: a different swallow.'],
+ [(id,c)=>id==='potato'&&!c.potstarch,'Plain potato won\'t pull alone. Potato starch helps.'],
+ [(id,c)=>GOODTIER(id)&&c[id]>=3,'Another one? A blend beats a pile.']];
+const has=(c,a)=>a.some(i=>c[i]);
+const GOOD=[
+ [(id,c)=>['puna','ma','cassava'].includes(id)&&has(c,['puna','ma'])&&c.cassava,'Yam + cassava = classic pull!'],
+ [(id,c)=>['cassava','plantain'].includes(id)&&c.cassava&&c.plantain,'Cassava + plantain = a classic fufu blend!'],
+ [(id,c)=>['potato','potstarch'].includes(id)&&c.potato&&c.potstarch,'Potato + potato starch = now it pulls!'],
+ [(id,c)=>['puna','ma','toran','potstarch'].includes(id)&&has(c,['puna','ma','toran'])&&c.potstarch,'Tuber + potato starch = pull and smooth!'],
+ [(id,c)=>(id==='tapioca'||TUBERS.includes(id))&&c.tapioca&&has(c,TUBERS),'Tapioca + a tuber = stretch with body!'],
+ [(id,c)=>['toran','ma','puna'].includes(id)&&c.toran&&has(c,['ma','puna']),'Taro + yam = earthy and smooth!'],
+ [(id,c)=>(id==='glutinous'||TUBERS.includes(id)||id==='potstarch')&&c.glutinous&&has(c,[...TUBERS,'potstarch']),'A little rice flour adds stretch!'],
+ [(id,c)=>(id==='kudzu'||TUBERS.includes(id))&&c.kudzu&&has(c,TUBERS),'Kudzu + a tuber = extra smooth!'],
+ [(id,c)=>c.fufu&&Object.keys(c).some(i=>i!=='fufu'&&GOODTIER(i)),'Fufu flour + a good starch = shortcut done right!'],
+ [(id,c,p)=>p.distinct>=3,'Three-way blend! Mama loves balance.']];
+let comboT=0;
+function combo(msg,kind){const el2=$('#combo');el2.className='combo on '+kind;el2.textContent=(kind==='warn'?'⚠️ ':'✨ ')+msg;say(msg);clearTimeout(comboT);
+ comboT=setTimeout(()=>{el2.className='combo'},2600);if(kind==='good')tone(1568,.18,{type:'triangle',gain:.07,delay:.25});}
+function checkCombos(id){const ids=M.basket.map(b=>b.id),p=profile(ids),c=p.cnt;M.fired=M.fired||{};
+ for(const [f,msg] of WARN){if(f(id,c,p)&&!M.fired[msg]){M.fired[msg]=1;combo(msg,'warn');return}}
+ for(const [f,msg] of GOOD){if(f(id,c,p)&&!M.fired[msg]){M.fired[msg]=1;combo(msg,'good');return}}}
+
+/* ---------- Mama's texts (the clock) ---------- */
+const GOALS={1:'Get me something that PULLS and something that makes it SMOOTH, my child.',2:'Money is tight. Two or three good things beat one expensive thing.',3:'Find the African shop in Itaewon. But remember: garri makes eba, not fufu 😉'};
+const NUDGE={empty:'Nothing yet? Korean yam (ma) is a cousin of our yam.',pull:'Fufu must pull, my child. A starch helps: potato or tapioca.',smooth:'Something smooth, like potato starch, stops it being rough.',
+ taste:'A real tuber gives the taste. Look for yam or taro.',sweet:'Not too much sweet potato, eh 😄',gluey:'Easy with the tapioca, it gets gluey.',bean:'Bean flour? Are we making moin moin? 😄',
+ diff:'That\'s a different swallow, my child. Fine, but I asked for fufu.',tteok:'Tteok? Lovely, but that\'s not swallow.',jelly:'Kudzu alone wobbles like jelly.',chewy:'Rice flour alone is chewy. Mix it.',
+ mono:'All the same thing? Mix it, my child.',more:'Good start! Bring enough to fill the pot.',blend:'Good! Now something to blend with it.',ok:'That sounds good! Come home soon ❤️'};
+function mamaText(t,ping){if(!M)return;M.chat=M.chat||[];M.chat.push(t);$('#mtxt').textContent=t;if(ping!==false)SFX.ping();
+ const b=$('#mbubble');if(!SV.reduced){b.classList.remove('bounce');void b.offsetWidth;b.classList.add('bounce')}}
+function hintTick(){if(!M||M.relaxed===undefined)return;const t=M.t;M.hints=M.hints||{};
+ if(!M.hints.goal&&t>=2.5){M.hints.goal=1;mamaText(GOALS[M.n])}
+ const marks=M.relaxed?[25,50]:[M.dur*.3,M.dur*.65];
+ marks.forEach((m,i)=>{if(!M.hints['n'+i]&&t>=m){M.hints['n'+i]=1;const v=verdict(profile(M.basket.map(b=>b.id)));mamaText(NUDGE[v.code]||NUDGE.ok)}});}
+function chatHistory(){if(!M||M.ended)return;const wasPaused=M.paused;M.paused=true;
+ modal(`<h2>Mama ❤️</h2><div class="col">${(M.chat||[]).map(t=>`<div class="msg in" style="max-width:100%">${t.replace(/</g,'&lt;')}</div>`).join('')}</div><button class="gold" id="ch-x" style="width:100%;margin-top:12px">Back to shopping</button>`,
+  b=>b.querySelector('#ch-x').onclick=()=>{closeModal();if(!wasPaused)resume()});}
+
+/* ---------- ingredient info card ---------- */
+function openInfo(l,t){if(!M||M.ended)return;const I=ING[t.id];M.slow=M.relaxed?0:.15;M.info=t;tut('info');
+ const tierLine={gold:'★ Gold: the real thing. Rare and pricey.',good:'Good stand-in, especially in a blend.',diff:'Makes a different swallow, not fufu.',wrong:'Wrong category for swallow.',decoy:'Tempting, but not the right texture.'}[I.tier];
+ let ex='';if(t.exact){const p=findPay(M.wallet,I.price,true);ex=`<p class="note">🪙 <b>Exact change only.</b> ${p?`You have it: ${DEN.filter(d=>p.use[d]).map(d=>`${won(d)}×${p.use[d]}`).join(' + ')}.`:'You don\'t have the right coins for this one.'}</p>`}
+ modal(`<div class="info"><div class="row" style="align-items:flex-start"><div id="if-art" style="width:72px;flex:none"></div><div class="grow"><h2 style="margin:0">${I.name}</h2>${I.ko?`<div class="muted">${I.ko}</div>`:''}<div><b>${won(I.price)}</b></div></div></div>
+ <p style="margin:10px 0 6px">${I.desc}</p>
+ <div class="adds"><div><b>Pull:</b> ${pullWord(I.pull)}</div><div><b>Smooth:</b> ${smoothWord(I.sm)}</div><div><b>Taste:</b> ${I.tw}</div></div>
+ <p class="muted" style="margin:8px 0">${tierLine}</p>${ex}
+ <p class="muted" style="font-size:.8rem;margin:0 0 10px">${M.relaxed?'The rows are paused while this card is open.':'The rows slow down while this card is open. Mama\'s clock keeps going.'}</p>
+ <div class="row"><button class="alt grow" id="if-x">Close</button><button class="gold grow" id="if-buy">Buy ${won(I.price)}</button></div></div>`,b=>{
+  b.querySelector('#if-art').appendChild(tileCanvas(t.id,false,72));
+  b.querySelector('#if-x').onclick=closeInfo;
+  b.querySelector('#if-buy').onclick=()=>{closeInfo();if(l.tiles.includes(t))buy(l,t);else toast('Too late, it rolled past!')};});}
+function closeInfo(){closeModal();if(M){M.slow=1;M.info=null}}
+
+/* ---------- level 1 tutorial (coach bubble over the market) ---------- */
+const TUT={start:'👆 Press and hold a tile, or tap its ⓘ, to see what it adds.',info:'Nice! Now tap a tile once to buy it.',buy:'Bought! Now press and hold a tile, or tap its ⓘ, to see what it adds.',meter:'👇 This meter shows Pull, Smooth and Taste. Try to fill all three, then Go cook.'};
+function coach(k){const c=$('#coach');$('#meter').classList.remove('glow','ring');if(!k){c.className='coach';return}c.className='coach on';$('#coachtxt').textContent=TUT[k];say(TUT[k]);
+ if(k==='meter'){$('#meter').classList.add('ring');if(!SV.reduced)$('#meter').classList.add('glow')}}
+function tut(ev){if(!M||!M.tut||M.tut.done)return;const s=M.tut;
+ if(ev==='info')s.info=true;if(ev==='buy')s.buy=true;
+ if(ev==='done'){s.done=true;coach(null);return}
+ if(s.info&&s.buy){if(!s.meter){s.meter=true;coach('meter');clearTimeout(M.tutT);M.tutT=setTimeout(()=>tut('done'),9000)}}
+ else coach(s.info?'info':'buy');}
+$('#coachx').onclick=()=>{if(M&&M.tut)M.tut.done=true;coach(null)};
+$('#mbubble').onclick=chatHistory;
 document.addEventListener('visibilitychange',()=>{if(document.hidden){if(curScreen==='s-market')pause();if(curScreen==='s-cook'&&CK&&!CK.done&&!CK.paused)cookPause();}});
 function onResize(){if(curScreen==='s-market'&&M&&!M.ended&&M.W){layoutMarket(false);drawMarket()}if(curScreen==='s-cook'&&CK&&!CK.done)sizeCook();}
 window.addEventListener('resize',onResize);
@@ -584,7 +758,7 @@ function cookTap(){if(!CK||CK.done||CK.paused||CK.round>2)return;ac();const tn=n
  if(best&&bd<=WIN()){const sc=bd<110?1:bd<210?.7:.4;best.j=sc;CK.scores.push(sc);CK.fx.push({label:sc===1?'Perfect!':sc>=.7?'Good':'Close',col:sc===1?'#7CFC9A':sc>=.7?'#ffe066':'#ffb366',t:tn});}
  else{CK.extra++;CK.fx.push({label:'Rushed! Lumps!',col:'#ff7a7a',t:tn});}}
 ccv.addEventListener('pointerdown',e=>{e.preventDefault();cookTap();});
-document.addEventListener('keydown',e=>{if(curScreen==='s-cook'&&(e.code==='Space'||e.code==='Enter')&&!$('#modal').classList.contains('on')){e.preventDefault();cookTap()}if(e.code==='Escape'&&curScreen==='s-market')pause();});
+document.addEventListener('keydown',e=>{if(curScreen==='s-cook'&&(e.code==='Space'||e.code==='Enter')&&!$('#modal').classList.contains('on')){e.preventDefault();cookTap()}if(e.code==='Escape'&&curScreen==='s-market'){if(M&&M.info)closeInfo();else pause()}if((e.code==='Enter'||e.code==='Space')&&document.activeElement===$('#mbubble')){e.preventDefault();chatHistory()}});
 function cookPause(){CK.paused=true;const pt=now();modal(`<h2>Paused</h2><p>The pot can wait a moment.</p><button class="gold" id="cp" style="width:100%">Resume</button>`,b=>b.querySelector('#cp').onclick=()=>{closeModal();const sh=now()-pt;CK.beats.forEach(x=>x.t+=sh);CK.lead=CK.lead.map(x=>x+sh);CK.paused=false;});}
 function smoothNow(){const judged=CK.scores.length;if(!judged)return 1;const sum=CK.scores.reduce((a,b)=>a+b,0);return clamp(sum/judged-.05*CK.extra,0,1);}
 function cookLoop(){if(!CK||CK.done)return;const tn=now();
@@ -624,21 +798,11 @@ function finishCook(){CK.done=true;const sum=CK.scores.reduce((a,b)=>a+b,0);M.S=
    (1, 1/2, 1/4…), and a blend of two or three good starches earns a bonus, so balance beats stacking gold. */
 function evaluate(){const B=M.basket.map(b=>b.id),S=M.S||0;const R={S,empty:!B.length,ids:B};
  if(!B.length){Object.assign(R,{H:0,react:1,P:0,T:0,lines:['The pot is empty. Just hot water and hope.'],sub:'She hugs you anyway. "Come. Tomorrow we go to the market together."',tip:'Even a regular Korean market sells potato starch and Korean yam (ma). Together they make a decent swallow.'});return R}
- const cnt={},con={};let W=0,P=0,T=0;
- for(const id of B){const n=cnt[id]=(cnt[id]||0)+1,w=Math.pow(.5,n-1);W+=w;P+=w*ING[id].pull;T+=w*ING[id].taste;con[id]=(con[id]||0)+w}
- P/=W;T/=W;const fr=ids=>ids.reduce((s,i)=>s+(con[i]||0),0)/W;
- const sweet=fr(['sweetpot']),gluey=fr(['tapioca']),chewy=fr(['glutinous']),tteok=fr(['tteok']),beany=fr(['bean']),jelly=fr(['kudzu']),pot=fr(['potato']);
- const diffIds=['wheat','semolina','garri'],diff=fr(diffIds);
- const distinct=Object.keys(cnt).filter(i=>(ING[i].tier==='gold'||ING[i].tier==='good')&&ING[i].pull+ING[i].taste>=4).length;
- if(sweet>.34)T-=.6;if(beany>0)T-=3.6*beany;
- if(gluey>=.5)P=Math.min(P,1.6);if(chewy>=.5)P=Math.min(P,2);if(jelly>=.5)P=Math.min(P,1.5);if(tteok>=.4)P=Math.min(P,1.5);
- P=clamp(P,0,3);T=clamp(T,0,3);
- const enough=Math.min(1,W/1.75),bal=distinct>=3?.18:distinct>=2?.12:0;
- const top=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0],mono=Object.keys(cnt).length===1&&cnt[top]>=3&&(ING[top].tier==='gold'||ING[top].tier==='good');
- const domDiff=diff>=.5?diffIds.reduce((a,i)=>(con[i]||0)>(con[a]||0)?i:a,'wheat'):null;
+ const pr=profile(B);const {W,P,T,Sm,sweet,gluey,tteok,beany,jelly,chewy,pot,distinct,enough,top,mono,domDiff}=pr;
+ const bal=distinct>=3?.18:distinct>=2?.12:0,Seff=S*(.7+.3*Sm/3);R.Sm=Sm;
  let Q=clamp(((P/3)*.5+(T/3)*.5)*enough*.85+bal-(mono?.08:0),0,1);if(domDiff)Q=Math.max(Q,.7*enough);
- const H=Q*(.35+.65*S);
- let react=H<.35?1:H<.55?2:H<.78?3:4;
+ const H=Q*(.35+.65*Seff);
+ let react=H<.35?1:H<.55?2:H<.76?3:4;
  if(domDiff)react=Math.min(react,3);
  const L=[];
  if(domDiff)L.push(domDiff==='garri'?'This is eba. Grainy, a little sour. Garri is roasted cassava.':domDiff==='semolina'?'This is semo. Smooth and mild.':'This is wheat meal. Firm and a little nutty.');
@@ -647,7 +811,7 @@ function evaluate(){const B=M.basket.map(b=>b.id),S=M.S||0;const R={S,empty:!B.l
  else if(jelly>=.5)L.push('It wobbles like jelly instead of pulling.');
  else if(chewy>=.5)L.push('Very stretchy, but chewy like mochi.');
  else L.push(P>=2.5?'It pulls. It pulls well.':P>=1.7?'It stretches a little when you pull it.':P>=.8?'It breaks. Fufu should pull, not snap.':'It won\'t hold together at all.');
- L.push(S>=.8?'Smooth, no lumps.':S>=.5?'Mostly smooth, with a few small lumps.':'Lumpy. The pounding was rushed.');
+ L.push(S<.5?'Lumpy. The pounding was rushed.':Sm<1.6?'Well pounded, but grainy and firm in texture.':Seff>=.8?'Smooth, no lumps.':'Mostly smooth, with a few small lumps.');
  if(beany>0)L.push('Something beany in here… that\'s a different dish.');
  else if(sweet>.34)L.push('But it\'s sweet? What did you put in?');
  else if(!domDiff)L.push(T>=2.4?'It tastes like home.':T>=1.5?'The taste is close, a little plain.':'The taste is off.');
@@ -761,7 +925,7 @@ $('#b-menu').onclick=()=>{if(curScreen==='s-market'&&M&&!M.ended){if(!M.paused)p
 window.FUFU={state:()=>({screen:curScreen,level:M&&M.n,basket:M?M.basket.map(b=>b.id):[],wallet:M?wTotal(M.wallet):0,ended:!!(M&&M.ended),t:M&&M.t,res:RES&&{react:RES.react,stars:RES.stars,score:RES.score,S:RES.S}}),
  tiles:()=>{if(!M)return[];const r=mcv.getBoundingClientRect(),out=[];for(const l of M.lanes)for(const t of l.tiles){const R=tileRect(l,t),cx=R.x+TW/2,cy=R.y+TH/2;
   if(cx>l.x+20&&cx<l.x+l.w-20&&cy>l.y&&cy<l.y+l.h)out.push({id:t.id,gold:t.gold,exact:t.exact,x:r.left+cx*M.k,y:r.top+cy*M.k})}return out},
- nextBeat:()=>{if(!CK||CK.done)return null;const b=CK.beats.find(x=>x.j===null);return b?b.t-now():null},cook:()=>CK&&{round:CK.round,done:CK.done},
+ nextBeat:()=>{if(!CK||CK.done)return null;const b=CK.beats.find(x=>x.j===null);return b?b.t-now():null},cook:()=>CK&&{round:CK.round,done:CK.done},info:()=>!!(M&&M.info),scale:()=>M?M.k:1,slow:()=>M&&M.slow,meter:()=>$('#verdict').textContent,combo:()=>$('#combo').textContent,mama:()=>$('#mtxt').textContent,coach:()=>$('#coach').classList.contains('on')?$('#coachtxt').textContent:'',
  evalBasket:(ids,S)=>{const keep=M;M={basket:ids.map(id=>({id})),S};const r=evaluate();M=keep;return {react:r.react,H:+r.H.toFixed(2),lines:r.lines,sub:r.sub,tip:r.tip}}};
 goTitle();
 })();
