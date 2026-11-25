@@ -127,6 +127,26 @@ canvas.face{display:block;margin:0 auto}
 .shbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.shbtns #sh-go{grid-column:1/-1}.shbtns button{min-height:44px}
 button.xbtn{background:#111;color:#fff;box-shadow:0 3px 0 #000}button.fbbtn{background:#1877f2;color:#fff;box-shadow:0 3px 0 #0b4fa8}.shbtns button{font-size:.92rem;padding:10px 8px}
 @media (max-width:380px){.chip{padding:2px 5px;font-size:.72rem}.wallet{gap:3px}.wallet .tot{font-size:.9rem}.bubble .txt{font-size:.85rem}}
+.warm{margin:0;text-align:center;font-size:.98rem;line-height:1.4;color:#5a2a10}
+.gloss{background:#fff7e6;border:1px dashed #d6b98f;border-radius:10px;padding:8px 10px;font-size:.9rem;line-height:1.35}
+.ajm{position:absolute;left:8px;bottom:10px;max-width:min(330px,88%);display:none;gap:8px;align-items:flex-start;background:#fff;border:2px solid #4c7fb8;border-radius:14px 14px 14px 4px;padding:6px 10px 6px 6px;box-shadow:0 4px 12px #0003;z-index:3}
+.ajm.on{display:flex;animation:pop .25s ease-out both}.reduced .ajm.on{animation:none}
+.ajm canvas{flex:none;border-radius:50%;background:#e6eef8}
+.ajm .who{display:block;font-size:.7rem;font-weight:800;color:#2f5f98}
+.ajm #ajmtxt{display:block;font-weight:800;font-size:.9rem;line-height:1.2}
+.ajm #ajmnote{display:block;font-size:.76rem;line-height:1.25;color:#4b3a2c;margin-top:2px}.ajm #ajmnote:empty{display:none}
+.ajm.on~.combo{bottom:auto;top:8px}.coach.on~.ajm.on~.combo{top:70px}
+.water{position:absolute;left:18px;right:18px;bottom:76px;background:#fff8ec;color:var(--ink);border-radius:16px;padding:12px;box-shadow:0 6px 20px #0006;z-index:4}
+.water[hidden]{display:none}
+.water .wq{margin:0 0 8px;text-align:center}
+.wres{margin:0 0 10px;font-size:1rem;line-height:1.35;padding:8px 10px;border-radius:10px}.wres.ok{background:#e3f4e8;color:#1f5a33}.wres.bad{background:#fdecdc;color:#7a3a10}
+#b-auto{align-self:center;background:#4a3326;box-shadow:0 2px 0 #1d120c;font-size:.88rem}#b-auto.on{background:#2f7d4a}#b-auto[hidden]{display:none}
+button.bigbuy{font-size:1.15rem;min-height:56px}
+.lockmsg{color:#7a2e12;font-weight:800}
+.lvl.locked{background:#f6efe6;box-shadow:0 3px 0 #e2d3bf}.lvl.locked .num{background:#9c8a78}
+#b-cook.ring{outline:3px solid #1e66f5;outline-offset:2px}
+.dyk{background:#fff7d1;border-left:5px solid #e0a800;border-radius:12px;padding:10px 12px;font-size:.96rem;line-height:1.35}.dyk:empty{display:none}
+@media (max-width:400px){#s-title>.center:first-child{margin-top:44px}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
 </head>
@@ -139,6 +159,7 @@ button.xbtn{background:#111;color:#fff;box-shadow:0 3px 0 #000}button.fbbtn{back
   <div class="center"><canvas id="titleface" class="face" width="180" height="180" aria-hidden="true"></canvas></div>
   <div class="logo center">Fufu for Mama</div>
   <div class="thesis">Every culture has a food that doesn't count as a meal without it. <b>What's your fufu?</b> Would you recognize it in someone else's kitchen?</div>
+  <p class="warm">In Nigeria, ‘fufu’ can mean many things. Mama means the cassava kind. <b>What does it mean in your house?</b></p>
   <button id="b-play" class="gold">Play</button>
   <div class="row"><button id="b-book" class="alt grow">📖 Recipe book</button><button id="b-faces" class="alt grow">👩🏾 Mama's faces</button></div>
   <p class="center muted" style="margin:0;font-size:.9rem">There's no failing. Mama's face is the score.</p>
@@ -165,8 +186,9 @@ button.xbtn{background:#111;color:#fff;box-shadow:0 3px 0 #000}button.fbbtn{back
     <div class="grow"><div class="who">Mama</div><div class="txt" id="mtxt" aria-live="polite"></div><div class="trip" id="trip"><i></i><i></i><i></i></div></div></div>
   </div>
   <div class="wallet" id="wallet" aria-label="Wallet"></div>
-  <div class="mwrap"><canvas id="mcv" aria-label="Market stalls. Tap an ingredient to buy it. Press and hold, or tap its info badge, to read about it."></canvas>
+  <div class="mwrap"><canvas id="mcv" aria-label="Market stalls. Tap an ingredient to read about it the first time, and to buy it after that. Press and hold, or tap its info badge, to read about it again."></canvas>
    <div class="coach" id="coach" aria-live="polite"><span id="coachtxt"></span><button id="coachx" aria-label="Hide tip">✕</button></div>
+   <div class="ajm" id="ajm" aria-live="polite"><canvas id="ajmface" width="40" height="40" aria-hidden="true"></canvas><div><b class="who">Market ajumma · stall owner</b><span id="ajmtxt"></span><small id="ajmnote"></small></div></div>
    <div class="combo" id="combo" aria-live="polite"></div></div>
   <div class="meter" id="meter" aria-label="Basket meter"><div class="mbars" id="meterbars"></div><div class="verdict" id="verdict" aria-live="polite"></div></div>
   <div id="toast" aria-live="polite"></div>
@@ -176,11 +198,14 @@ button.xbtn{background:#111;color:#fff;box-shadow:0 3px 0 #000}button.fbbtn{back
  <section id="s-cook" class="screen" aria-label="Cooking">
   <div class="cookinfo"><b id="cround">Round 1 of 3</b><div id="chint" style="color:#f2d8b8">Tap when the ring meets the circle.</div></div>
   <canvas id="ccv" aria-label="Cooking. Tap in rhythm."></canvas>
+  <div class="water" id="water" hidden aria-live="polite"></div>
+  <button id="b-auto" class="small" hidden>🤲 Auto-pound for me</button>
   <p class="center" id="cookhelp" style="margin:0;color:#f2d8b8;font-size:.9rem">Tap when the white ring meets the gold circle. Steady beats make smooth fufu. Rushing makes lumps.</p>
  </section>
 
  <section id="s-taste" class="screen" aria-label="Taste test">
   <h2 class="center" style="margin-top:44px">Taste test</h2>
+  <p class="center muted" style="margin:-8px 0 0;font-size:.85rem">Tap to see it all at once.</p>
   <canvas id="tcv" width="300" height="190" class="face" aria-hidden="true"></canvas>
   <div id="sents" class="col" aria-live="polite"></div>
   <button id="b-serve" class="gold">Serve Mama →</button>
@@ -191,6 +216,7 @@ button.xbtn{background:#111;color:#fff;box-shadow:0 3px 0 #000}button.fbbtn{back
   <div class="say" id="say" aria-live="polite"></div>
   <div class="sub" id="saysub"></div>
   <div class="tip" id="tip"></div>
+  <div class="dyk" id="dyk"></div>
   <div class="card center" id="resbox"></div>
   <div class="missed" id="missed"></div>
   <div class="row"><button id="b-retry" class="alt grow">Try again</button><button id="b-next" class="grow">Next level</button></div>
@@ -212,6 +238,7 @@ const KRW_PER_USD=1400;
 function usd(n){const v=n/KRW_PER_USD;if(v<10){const h=Math.round(v*2)/2;return '~$'+(h<.5?'0.50':(h%1?h.toFixed(2):String(h)))}return '~$'+Math.round(v)}
 const showUsd=()=>SV.usd!==false;
 const wonU=n=>won(n)+(showUsd()?` <span class="usd">(${usd(n)})</span>`:'');
+const GLOSS='<b>Swallow:</b> a soft, starchy food you pinch off, dip in soup, and swallow. Fufu is one. Pounded yam (iyan) is a beloved swallow in its own right.';
 const WON_NOTE='Prices are in Korean won. ₩1,000 is about 70 cents.';
 const wonT=n=>won(n)+(showUsd()?` (${usd(n)})`:'');
 const rnd=(a,b)=>a+Math.random()*(b-a);
@@ -221,8 +248,9 @@ const now=()=>performance.now();
 /* ================= SAVE ================= */
 const KEY='fufuForMama.v1';
 function defSave(){let r=false;try{r=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
- return {v:1,best:{},stars:{},recipes:{},faces:{},unlocked:1,seenIntro:false,mute:false,reduced:r,relaxed:false,usd:true};}
+ return {v:1,best:{},stars:{},recipes:{},faces:{},unlocked:1,seenIntro:false,mute:false,reduced:r,relaxed:false,usd:true,learned:{}};}
 let SV; try{SV=Object.assign(defSave(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){SV=defSave()}
+if(!SV.learned||typeof SV.learned!=='object')SV.learned={};
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(SV))}catch(e){}}
 function applyReduced(){document.body.classList.toggle('reduced',!!SV.reduced)}
 applyReduced();
@@ -439,21 +467,21 @@ function faceCanvas(cv,mood){const d=DPR();if(!cv._w){cv._w=cv.width;cv._h=cv.he
  const w=cv._w,h=cv._h,c=cv.getContext('2d');c.setTransform(cv._d,0,0,cv._d,0,0);c.clearRect(0,0,w,h);drawMom(c,w/2,h*.56,Math.min(w,h)*.42,mood);}
 /* ================= LEVELS ================= */
 const LEVELS={
- 1:{title:'First trip',sub:'Tutorial · one slow row · grab what you like',time:90,beat:900,wallet:{10000:4,5000:2,1000:8,500:4},exact:0,goldGap:7,
+ 1:{title:'First trip',sub:'Tutorial · one slow row · grab what you like',time:90,beat:900,wallet:{10000:4,5000:2,1000:8,500:4},soldOut:0,goldGap:7,
   lanes:[{dir:'right',T:6.5,frame:'none',name:'NEIGHBORHOOD MARKET',pool:{ma:3,sweetpot:3,potato:3,potstarch:3,glutinous:2,wheat:2,tteok:2,puna:.7,cassava:.7}}],
   texts:['Just landed! At baggage claim 😊','In the taxi. Remember, fufu must PULL when you tear it.','Five minutes, my child.','Taxi is outside your building!'],
-  card:'Tap any tile to drop it in your basket. <b>Press and hold</b> a tile, or tap its <b>ⓘ</b>, to read what it adds. The <b>meter</b> under the market shows your Pull, Smooth and Taste, and Mama will text you hints. Your basket holds 5 (tap a slot to put something back). Gold tiles with a ★ are the real thing: rare, pricey and quick.'},
- 2:{title:'Tight budget',sub:'Two rows, opposite ways · exact-change sellers',time:60,beat:820,wallet:{10000:1,5000:1,1000:5,500:4},exact:.3,goldGap:8,
+  card:'The first time you tap an ingredient, its card opens so you can see what it adds. After that, one tap buys it. <b>Press and hold</b> a tile, or tap its <b>ⓘ</b>, to read it again. The <b>meter</b> under the market shows Pull, Smooth and Taste. Your basket holds 5 (tap a slot to put one back). Gold tiles with a ★ are the real thing: rare, pricey and quick.'},
+ 2:{title:'Tight budget',sub:'Two rows, opposite ways · some stalls sell out',time:70,beat:820,wallet:{10000:1,5000:2,1000:5,500:2},soldOut:.2,goldGap:8,
   lanes:[{dir:'right',T:3.4,frame:'none',name:'PRODUCE & SNACKS',pool:{ma:3,sweetpot:3,potato:3,toran:3,tteok:2,tapioca:2,cassava:.6,plantain:.6}},
          {dir:'left',T:3.4,frame:'none',name:'FLOUR & STARCH',pool:{potstarch:3,glutinous:3,tapioca:2,kudzu:2,wheat:2,bean:2,puna:.6}}],
   texts:['Landed again 😄 At baggage claim.','In the taxi. Watch your money, my child.','Five minutes. Is the water boiling?','I\'m at your door!'],
-  card:'Two rows now, moving opposite ways, and only ₩22,000 to spend. Sellers with an <b>EXACT</b> badge give no change: you need the right coins, and those coins light up blue in your wallet.'},
- 3:{title:'Itaewon run',sub:'Adds a vertical row · stalls are color + shape coded',time:75,beat:780,wallet:{10000:2,5000:1,1000:3,500:4},exact:.3,goldGap:8,coded:true,
+  card:'Two rows now, moving opposite ways, and ₩26,000 to spend. Sellers give change, so any notes and coins will do. Some stalls run out: a <b>품절 · SOLD OUT</b> tile can\'t be bought, so wait for the next one.'},
+ 3:{title:'Itaewon run',sub:'Three rows · less money, less time · a lunch break',time:55,beat:780,wallet:{10000:1,5000:1,1000:4,500:2},soldOut:.12,goldGap:8,coded:true,
   lanes:[{dir:'right',T:3.3,frame:'produce',name:'PRODUCE',pool:{ma:3,sweetpot:3,potato:3,toran:3,cassava:.6}},
-         {dir:'left',T:3.3,frame:'dry',name:'DRY GOODS',pool:{potstarch:3,glutinous:2,tapioca:2,kudzu:2,wheat:2,bean:2,tteok:2}},
+         {dir:'left',T:3.3,frame:'dry',name:'DRY GOODS',lunch:{first:12,every:22,dur:7},pool:{potstarch:3,glutinous:2,tapioca:2,kudzu:2,wheat:2,bean:2,tteok:2}},
          {dir:'down',T:3.5,frame:'itaewon',name:'ITAEWON AFRICAN SHOP',pool:{garri:3,semolina:3,plantain:.9,puna:.9,fufu:.9}}],
   texts:['At baggage claim. Did you find the African shop in Itaewon?','In the taxi. Garri is not fufu, you know 😉','Five minutes, my child.','Taxi is outside!'],
-  card:'Rows are coded by stall, by color <i>and</i> shape:<br>🟩 <b>PRODUCE</b>: green, leaf pattern, round tiles.<br>🟦 <b>DRY GOODS</b>: blue, grid pattern, square tiles with dashed edges.<br>🟧 <b>ITAEWON AFRICAN SHOP</b>: orange, stripes, notched corners, coming down the side.'}
+  card:'Only ₩20,000 this time, and Mama lands sooner. The <b>DRY GOODS</b> stall closes now and then for <b>점심시간</b> (lunch break), so plan around it.<br>Rows are coded by stall, by color <i>and</i> shape:<br>🟩 <b>PRODUCE</b>: green, leaf pattern, round tiles.<br>🟦 <b>DRY GOODS</b>: blue, grid pattern, square tiles with dashed edges.<br>🟧 <b>ITAEWON AFRICAN SHOP</b>: orange, stripes, notched corners, coming down the side.'}
 };
 const GOLDF=1.28;
 
@@ -476,21 +504,24 @@ function goIntro(){stopAll();show('s-intro');const scr=$('#introscr');scr.queryS
  msgs.forEach((m,i)=>introTimers.push(setTimeout(()=>{const d=document.createElement('div');d.className='msg '+m[0];d.textContent=m[1];scr.appendChild(d);if(m[0]==='in')SFX.ping()},SV.reduced?0:300+i*900)));
  SV.seenIntro=true;persist();}
 function goLevels(){stopAll();show('s-levels');const L=$('#levellist');L.innerHTML='';
- for(let n=1;n<=3;n++){const lv=LEVELS[n],lock=n>SV.unlocked,b=document.createElement('button');b.className='lvl';b.disabled=lock;
-  b.innerHTML=`<span class="num">${lock?'🔒':n}</span><span class="grow"><b>Level ${n} · ${lv.title}</b><small>${lv.sub}</small><small>${starsHTML(SV.stars[n]||0)} &nbsp;Best: ${SV.best[n]||'–'}</small></span>`;
-  b.onclick=()=>levelCard(n);L.appendChild(b);}
+ for(let n=1;n<=3;n++){const lv=LEVELS[n],lock=isLocked(n),b=document.createElement('button');b.className='lvl'+(lock?' locked':'');
+  b.innerHTML=`<span class="num">${lock?'🔒':n}</span><span class="grow"><b>Level ${n} · ${lv.title}</b><small>${lv.sub}</small>${lock?`<small class="lockmsg">🔒 Get 2 ⭐ on Level ${n-1} to unlock</small>`:`<small>${starsHTML(SV.stars[n]||0)} &nbsp;Best: ${SV.best[n]||'–'}</small>`}</span>`;
+  b.onclick=()=>lock?lockCard(n):levelCard(n);L.appendChild(b);}
  $('#t-relaxed2').checked=!!SV.relaxed;}
+const isLocked=n=>n>SV.unlocked&&!SV.relaxed;
+function lockCard(n){modal(`<h2>🔒 Level ${n} · ${LEVELS[n].title}</h2><p><b>Get 2 ⭐ on Level ${n-1} to unlock it.</b> Two stars means Mama smiled. Try a blend that pulls, is smooth and tastes like home.</p><p class="muted">You have ${SV.stars[n-1]||0} ⭐ on Level ${n-1} so far. There's no failing, so try as many times as you like. Or turn on <b>Relaxed mode</b> to open every level.</p>
+ <div class="row"><button class="alt grow" id="lk-x">OK</button><button class="gold grow" id="lk-go">Play Level ${n-1}</button></div>`,b=>{b.querySelector('#lk-x').onclick=closeModal;b.querySelector('#lk-go').onclick=()=>{closeModal();levelCard(n-1)}});}
 function levelCard(n){const lv=LEVELS[n];
  const card=lv.card.replace(/₩([\d,]+)/g,(m,v)=>wonU(+v.replace(/,/g,'')));
- modal(`<h2>Level ${n} · ${lv.title}</h2><p>${card}</p>${n===1?`<p class="muted" style="font-size:.9rem">💱 ${WON_NOTE}</p>`:''}${SV.relaxed?'<p class="pill">Relaxed mode: no clock</p>':'<p class="muted">Mama\'s texts are your clock. When she arrives, you cook.</p>'}
+ modal(`<h2>Level ${n} · ${lv.title}</h2><p>${card}</p>${n===1?`<p class="gloss">${GLOSS}</p><p class="muted" style="font-size:.9rem">💱 ${WON_NOTE}</p>`:''}${SV.relaxed?'<p class="pill">Relaxed mode: no clock</p>':'<p class="muted">Mama\'s texts are your clock. When she arrives, you cook.</p>'}
  <div class="row"><button class="alt grow" id="mc-x">Back</button><button class="gold grow" id="mc-go">Start</button></div>`,b=>{b.querySelector('#mc-x').onclick=closeModal;b.querySelector('#mc-go').onclick=()=>{closeModal();startLevel(n)}});}
 
 /* ================= WALLET MATH (Korean won notes and coins) ================= */
 const DEN=[10000,5000,1000,500];
 const wTotal=w=>DEN.reduce((s,d)=>s+d*(w[d]||0),0);
-function findPay(w,price,exact){let best=null;
+function findPay(w,price){let best=null;
  for(let a=0;a<=(w[10000]||0);a++)for(let b=0;b<=(w[5000]||0);b++)for(let c=0;c<=(w[1000]||0);c++)for(let d=0;d<=(w[500]||0);d++){
-  const s=a*10000+b*5000+c*1000+d*500;if(exact?s!==price:s<price)continue;const sc=(s-price)*10+(a+b+c+d);if(!best||sc<best.sc)best={sc,s,use:{10000:a,5000:b,1000:c,500:d}};}
+  const s=a*10000+b*5000+c*1000+d*500;if(s<price)continue;const sc=(s-price)*10+(a+b+c+d);if(!best||sc<best.sc)best={sc,s,use:{10000:a,5000:b,1000:c,500:d}};}
  return best;}
 function addMoney(w,amt){for(const d of DEN){while(amt>=d){w[d]=(w[d]||0)+1;amt-=d}}}
 
@@ -498,10 +529,11 @@ function addMoney(w,amt){for(const d of DEN){while(amt>=d){w[d]=(w[d]||0)+1;amt-
 let M=null,raf=0;
 const mcv=$('#mcv'),mctx=mcv.getContext('2d');
 function startLevel(n){stopAll();const L=LEVELS[n];
- M={n,L,relaxed:!!SV.relaxed,wallet:Object.assign({},L.wallet),basket:[],t:0,dur:L.time,lanes:[],seen:{},goldT:-99,goldN:0,stage:-1,ended:false,paused:false,flyers:[],last:0,focusKey:'',uid:0,slow:1,chat:[],hints:{},fired:{},info:null,tut:n===1?{}:null};
- show('s-market');faceCanvas($('#mface'),0);renderBasket();renderMeter();coach(n===1?'start':null);$('#combo').className='combo';
+ M={n,L,relaxed:!!SV.relaxed,wallet:Object.assign({},L.wallet),basket:[],t:0,dur:L.time,lanes:[],seen:{},goldT:-99,goldN:0,stage:-1,ended:false,paused:false,flyers:[],last:0,focusKey:'',uid:0,slow:1,chat:[],hints:{},fired:{},info:null,tut:n===1?{step:'learn'}:null,svc:false,said:{}};
+ show('s-market');faceCanvas($('#mface'),0);renderBasket();renderMeter();coach(n===1?'learn':null);$('#combo').className='combo';$('#ajm').className='ajm';ajmFace();
  requestAnimationFrame(()=>{if(!M||M.n!==n)return;layoutMarket(true);renderWallet();setStage(0);
-  toast(n===1?'Tap to buy. Press and hold to learn.':n===2?'Watch for EXACT badges: the right coins light up blue.':'Find the Itaewon African shop coming down the side.',4500);
+  toast(n===1?'Tap a tile to learn about it.':n===2?'Some stalls sell out (품절). Wait for the next one.':'Dry goods closes for lunch now and then (점심시간).',4500);
+  setTimeout(()=>{if(M&&M.n===n&&!M.ended)ajm('어서오세요! Welcome!')},900);
   ambStart();M.last=now();loop();});}
 function layoutMarket(fill){if(!M)return;const r=mcv.getBoundingClientRect(),d=DPR();const W0=Math.max(200,r.width),H0=Math.max(160,r.height);const LH=TH+24,cfg=M.L.lanes;
  mcv.width=Math.round(W0*d);mcv.height=Math.round(H0*d);
@@ -518,8 +550,8 @@ function pick(l,noGold){const pool=l.cfg.pool;let ids=Object.keys(pool);const go
  const golds=ids.filter(i=>ING[i].tier==='gold');
  if(goldOK&&M.goldN===0&&M.t>10&&golds.length){M.goldT=M.t;return golds[Math.floor(Math.random()*golds.length)]}
  const tot=ids.reduce((s,i)=>s+pool[i],0);let r=Math.random()*tot;for(const i of ids){r-=pool[i];if(r<=0){if(ING[i].tier==='gold')M.goldT=M.t;return i}}return ids[0];}
-function spawn(l,id,p){const g=ING[id].tier==='gold';const ex=Math.random()<M.L.exact*(g?.6:1);
- const t={id,p:p||0,v:l.v*(g?GOLDF:1),exact:ex,gold:g,uid:++M.uid,shake:0};
+function spawn(l,id,p){const g=ING[id].tier==='gold';const so=!g&&M.t>4&&Math.random()<(M.L.soldOut||0);
+ const t={id,p:p||0,v:l.v*(g?GOLDF:1),sold:so,gold:g,uid:++M.uid,shake:0};
  // keep the array ordered oldest (furthest along) first
  if(p){let i=0;while(i<l.tiles.length&&l.tiles[i].p>p)i++;l.tiles.splice(i,0,t)}else l.tiles.push(t);
  M.seen[id]=(M.seen[id]||0)+1;if(g)M.goldN++;return t;}
@@ -530,7 +562,8 @@ function laneStep(l,dt2){for(const t of l.tiles){t.p+=t.v*dt2;if(t.shake>0)t.sha
  if(!last||last.p>=need){spawn(l,l.next,0);l.next=null;l.gap=rnd(18,60);}}
 function tileRect(l,t){if(l.axis==='x'){const y=l.y+20;const x=l.dir==='right'?l.x-TW+t.p:l.x+l.w-t.p;return {x,y,w:TW,h:TH}}
  return {x:l.x+(l.w-TW)/2,y:l.y-TH+t.p,w:TW,h:TH};}
-function canAfford(t){const pr=ING[t.id].price;return t.exact?!!findPay(M.wallet,pr,true):wTotal(M.wallet)>=pr}
+function canAfford(t){return wTotal(M.wallet)>=ING[t.id].price}
+function lunchOn(l){const c=l.cfg.lunch;if(!c||!M)return false;const t=M.t-c.first;return t>=0&&(t%c.every)<c.dur}
 function drawLaneBg(c,l){c.save();rr(c,l.x,l.y,l.w,l.h,12);const f=l.cfg.frame;
  c.fillStyle=f==='produce'?'#d9eccf':f==='dry'?'#d6e2f6':f==='itaewon'?'#f8dcc0':'#e8cfa4';c.fill();c.clip();
  if(f==='none'){c.strokeStyle='rgba(120,80,40,.18)';c.lineWidth=2;c.beginPath();for(let y=l.y+10;y<l.y+l.h;y+=16){c.moveTo(l.x,y);c.lineTo(l.x+l.w,y)}c.stroke();}
@@ -554,23 +587,17 @@ function drawMarket(){const c=mctx,d=DPR()*M.k;c.setTransform(d,0,0,d,0,0);c.cle
   for(const t of l.tiles){const R=tileRect(l,t),ox=t.shake>0?Math.sin(t.shake*60)*4:0,X=R.x+ox;
    if(t.gold){c.save();c.shadowColor='#ffcc00';c.shadowBlur=SV.reduced?14:12+8*Math.sin(tm*6);framePath(c,f,X,R.y,TW,TH);c.fillStyle='#ffd23f';c.fill();c.restore()}
    c.drawImage(sprite(t.id,f,M.k),X-4,R.y-4,TW+8,TH+8);
-   {const ix=X+(t.gold?36:12),iy=R.y+12;dt(c,[[ix,iy]],'rgba(43,26,16,.5)',9.5);dt(c,[[ix,iy]],'#fff',8);tx(c,'i',ix,iy+.5,11.5,'#1e5fa8',900);}
-   const ok=canAfford(t);
-   if(t.exact){const bx=X+TW-47,by=R.y+4;rr(c,bx,by,43,17,8);c.fillStyle=ok?'#ffe066':'#4b5563';c.fill();c.strokeStyle=ok?'#7a5c00':'#1f2937';c.lineWidth=1.2;c.stroke();
-    dt(c,[[bx+8.5,by+8.5]],ok?'#c99a00':'#9ca3af',5.5);tx(c,'₩',bx+8.5,by+8.5,7,'#fff',900);tx(c,ok?'EXACT':'EXACT ✕',bx+27,by+8.5,7.5,ok?'#3b2a00':'#fff',900);
-    if(!ok){c.fillStyle='rgba(255,255,255,.35)';framePath(c,f,X,R.y,TW,TH);c.fill()}}
-   else if(!ok){c.fillStyle='rgba(255,255,255,.55)';framePath(c,f,X,R.y,TW,TH);c.fill();rr(c,X+TW/2-31,R.y+ARTH-20,62,16,8);c.fillStyle='#a23b2a';c.fill();tx(c,'NOT ENOUGH',X+TW/2,R.y+ARTH-12,8,'#fff',900)}
-  }c.restore();laneLabel(c,l);}
+   {const ix=X+TW-13,iy=R.y+13;dt(c,[[ix,iy]],'rgba(43,26,16,.5)',9.5);dt(c,[[ix,iy]],'#fff',8);tx(c,'i',ix,iy+.5,11.5,'#1e5fa8',900);}
+   if(t.sold){c.fillStyle='rgba(255,255,255,.6)';framePath(c,f,X,R.y,TW,TH);c.fill();rr(c,X+TW/2-34,R.y+ARTH-26,68,28,8);c.fillStyle='#4b5563';c.fill();
+    tx(c,'품절',X+TW/2,R.y+ARTH-18,10,'#fff',900);tx(c,'SOLD OUT',X+TW/2,R.y+ARTH-7,8,'#fff',900)}
+   else if(!canAfford(t)){c.fillStyle='rgba(255,255,255,.55)';framePath(c,f,X,R.y,TW,TH);c.fill();rr(c,X+TW/2-31,R.y+ARTH-20,62,16,8);c.fillStyle='#a23b2a';c.fill();tx(c,'NOT ENOUGH',X+TW/2,R.y+ARTH-12,8,'#fff',900)}
+  }if(lunchOn(l)){c.fillStyle='rgba(255,255,255,.5)';c.fillRect(l.x,l.y,l.w,l.h);const bw=Math.min(l.w-16,230),bx=l.x+(l.w-bw)/2,by=l.y+l.h/2-20;rr(c,bx,by,bw,40,10);c.fillStyle='rgba(31,41,55,.92)';c.fill();
+   tx(c,'🍱 점심시간 · Lunch break',bx+bw/2,by+14,12,'#fff',900);tx(c,'Back in a few seconds',bx+bw/2,by+29,10,'#d1d5db',700)}
+  c.restore();laneLabel(c,l);}
  for(const fl of M.flyers){const k=clamp(fl.t/.45,0,1),e=1-(1-k)*(1-k);const x=fl.x+(fl.tx-fl.x)*e,y=fl.y+(fl.ty-fl.y)*e,s=1-.6*e;c.globalAlpha=1-k*.5;
   c.drawImage(sprite(fl.id,'none',M.k),x-(TW+8)*s/2,y-(TH+8)*s/2,(TW+8)*s,(TH+8)*s);c.globalAlpha=1}}
-function focusExact(){let best=null,bd=1e9;for(const l of M.lanes)for(const t of l.tiles){if(!t.exact)continue;const R=tileRect(l,t);
-  const cx=R.x+TW/2,cy=R.y+TH/2;if(cx<l.x||cx>l.x+l.w||cy<l.y||cy>l.y+l.h)continue;const dd=l.axis==='x'?Math.abs(cx-(l.x+l.w/2)):Math.abs(cy-(l.y+l.h/2));if(dd<bd){bd=dd;best=t}}
- let use=null,key='';if(best){const p=findPay(M.wallet,ING[best.id].price,true);if(p){use=p.use;key=best.uid+':'+JSON.stringify(use)}else key=best.uid+':x'}
- key+='|'+JSON.stringify(M.wallet);if(key!==M.focusKey){M.focusKey=key;renderWallet(use,best)}}
-function renderWallet(use,ft){const w=M.wallet;let h=`<span class="tot">${wonU(wTotal(w))}</span>`;
- for(const d of DEN){const n=w[d]||0;if(!n)continue;const hl=use&&use[d]>0;
-  h+=`<span class="chip ${d>=1000?'note':'coin'}${hl?' hl':''}">${won(d)}×${n}${hl?` <span class="need">use ${use[d]}</span>`:''}</span>`}
- if(ft)h+=use?`<span class="chip hl">EXACT ${won(ING[ft.id].price)} ✓</span>`:`<span class="chip" style="background:#eee;color:#555">No coins for ${won(ING[ft.id].price)}</span>`;
+function renderWallet(){const w=M.wallet;let h=`<span class="tot">${wonU(wTotal(w))}</span>`;
+ for(const d of DEN){const n=w[d]||0;if(!n)continue;h+=`<span class="chip ${d>=1000?'note':'coin'}">${won(d)}×${n}</span>`}
  $('#wallet').innerHTML=h;}
 function renderBasket(bounceIdx){const S=$('#slots');S.innerHTML='';for(let i=0;i<5;i++){const b=document.createElement('button');b.className='slot';const it=M.basket[i];
   if(it){b.classList.add('filled');b.setAttribute('aria-label',`${ING[it.id].name}. Tap to put it back.`);b.appendChild(tileCanvas(it.id,false));
@@ -579,28 +606,31 @@ function renderBasket(bounceIdx){const S=$('#slots');S.innerHTML='';for(let i=0;
  $('#b-cook').classList.toggle('pulse',M.basket.length>=5&&!SV.reduced);}
 function buy(l,t){const I=ING[t.id];
  if(M.basket.length>=5){toast('Basket is full (5). Tap a slot to put one back, or Go cook!');SFX.err();t.shake=.3;return}
- const pay=findPay(M.wallet,I.price,t.exact);
- if(!pay){SFX.err();t.shake=.3;toast(t.exact?`This seller needs exact change: ${wonT(I.price)}. You don't have those coins.`:`Not enough money for ${I.name} (${wonT(I.price)}).`,2800);return}
+ if(t.sold){SFX.err();t.shake=.3;toast(`${I.name} is sold out here (품절). Another one will come along.`,2600);ajm('죄송해요! Sorry, that one is sold out.');return}
+ if(lunchOn(l)){SFX.err();t.shake=.3;toast('This stall is on lunch break (점심시간). Back in a few seconds.',2600);return}
+ const pay=findPay(M.wallet,I.price);
+ if(!pay){SFX.err();t.shake=.3;toast(`Not enough money for ${I.name} (${wonT(I.price)}).`,2800);return}
  for(const d of DEN)M.wallet[d]-=pay.use[d];addMoney(M.wallet,pay.s-I.price);
  M.basket.push({id:t.id,price:I.price});const R=tileRect(l,t);l.tiles=l.tiles.filter(x=>x!==t);
  M.flyers.push({id:t.id,x:R.x+TW/2,y:R.y+TH/2,tx:M.W*(M.basket.length-.5)/6,ty:M.H+30,t:0});
  SFX.clink();SFX.bounce();const fresh=!SV.recipes[t.id];SV.recipes[t.id]=1;persist();
  toast(`+ ${I.name} · ${wonT(I.price)}${pay.s>I.price?` · change ${won(pay.s-I.price)}`:''}${fresh?' · 📖 new card!':''}`);say(`Bought ${I.name}`);
- renderBasket(M.basket.length-1);M.focusKey='';renderMeter();checkCombos(t.id);tut(M.basket.length>=3&&M.tut&&M.tut.meter?'done':'buy');
+ renderBasket(M.basket.length-1);renderWallet();renderMeter();checkCombos(t.id);tut('buy');ajmAfterBuy(t.id);
+ if(M.basket.length===3&&!M.fired.n3){M.fired.n3=1;setTimeout(()=>{if(M&&!M.ended&&M.basket.length<5)toast('Basket holds 5. You can Go cook anytime 🍲',3800)},1400)}
  if(M.basket.length>=5)setTimeout(()=>{if(M&&!M.ended)toast('Basket full! Tap Go cook 🍲',3000)},1300);}
-function unbuy(i){if(!M||M.ended)return;const it=M.basket.splice(i,1)[0];addMoney(M.wallet,it.price);SFX.bounce();toast(`Put back ${ING[it.id].name}, refunded ${wonT(it.price)}.`);renderBasket();M.focusKey='';renderMeter();}
+function unbuy(i){if(!M||M.ended)return;const it=M.basket.splice(i,1)[0];addMoney(M.wallet,it.price);SFX.bounce();toast(`Put back ${ING[it.id].name}, refunded ${wonT(it.price)}.`);renderBasket();renderWallet();renderMeter();}
 function setStage(s){if(s===M.stage)return;M.stage=s;const t2=M.relaxed?(s===0?'Landed! No rush, I\'m having tea at the airport café ☕':M.L.texts[3]):M.L.texts[s];
  mamaText(t2,s>0);const tr=$('#trip').children;for(let i=0;i<3;i++)tr[i].className=M.relaxed?'':(i<s?'on':i===s?'now':'');$('#trip').style.visibility=M.relaxed?'hidden':'visible';
  faceCanvas($('#mface'),0);}
 function loop(){if(!M||M.ended)return;const tn=now();const dt2=Math.min(.05,(tn-M.last)/1000);M.last=tn;
  if(!M.paused){M.t+=dt2;for(const l of M.lanes)laneStep(l,dt2*M.slow);hintTick();M.flyers.forEach(f=>f.t+=dt2);M.flyers=M.flyers.filter(f=>f.t<.45);
   if(!M.relaxed){const k=M.t/M.dur;setStage(k>=1?3:k>=.8?2:k>=.45?1:0);if(k>=1){drawMarket();endShopping('time');return}}
-  focusExact();drawMarket();}
+  drawMarket();}
  raf=requestAnimationFrame(loop);}
 function hitTile(e){const r=mcv.getBoundingClientRect(),x=(e.clientX-r.left)/M.k,y=(e.clientY-r.top)/M.k;
  let best=null,bd=1e9;const pad=e.pointerType==='mouse'?8:16;
  for(const l of M.lanes){if(x<l.x-pad||x>l.x+l.w+pad||y<l.y-pad||y>l.y+l.h+pad)continue;for(const t of l.tiles){const R=tileRect(l,t);
-  if(x>=R.x-pad&&x<=R.x+R.w+pad&&y>=R.y-pad&&y<=R.y+R.h+pad){const dd=Math.hypot(x-R.x-TW/2,y-R.y-TH/2);if(dd<bd){bd=dd;best={l,t,info:x-R.x<(t.gold?52:32)&&y-R.y<32}}}}}
+  if(x>=R.x-pad&&x<=R.x+R.w+pad&&y>=R.y-pad&&y<=R.y+R.h+pad){const dd=Math.hypot(x-R.x-TW/2,y-R.y-TH/2);if(dd<bd){bd=dd;best={l,t,info:x-R.x>TW-46&&y-R.y<42}}}}}
  return best;}
 let PRESS=null;
 mcv.addEventListener('contextmenu',e=>e.preventDefault());
@@ -609,7 +639,7 @@ mcv.addEventListener('pointerdown',e=>{if(!M||M.ended||M.paused||M.info)return;e
  if(PRESS)clearTimeout(PRESS.timer);const p=PRESS={l:h.l,t:h.t,id:e.pointerId,done:false};
  p.timer=setTimeout(()=>{if(PRESS===p&&!p.done&&M&&!M.ended&&!M.paused){p.done=true;openInfo(p.l,p.t)}},400);});
 function endPress(e,buyIt){if(!PRESS||PRESS.id!==e.pointerId)return;clearTimeout(PRESS.timer);const p=PRESS;PRESS=null;
- if(!p.done&&buyIt&&M&&!M.ended&&!M.paused&&!M.info){if(p.l.tiles.includes(p.t))buy(p.l,p.t);else toast('Too late, it rolled past!')}}
+ if(!p.done&&buyIt&&M&&!M.ended&&!M.paused&&!M.info){if(!p.l.tiles.includes(p.t))toast('Too late, it rolled past!');else if(!SV.learned[p.t.id])openInfo(p.l,p.t,true);else buy(p.l,p.t)}}
 mcv.addEventListener('pointerup',e=>endPress(e,true));
 mcv.addEventListener('pointercancel',e=>endPress(e,false));
 function endShopping(reason){if(!M||M.ended)return;M.ended=true;cancelAnimationFrame(raf);ambStop();
@@ -733,29 +763,87 @@ function chatHistory(){if(!M||M.ended)return;const wasPaused=M.paused;M.paused=t
   b=>b.querySelector('#ch-x').onclick=()=>{closeModal();if(!wasPaused)resume()});}
 
 /* ---------- ingredient info card ---------- */
-function openInfo(l,t){if(!M||M.ended)return;const I=ING[t.id];M.slow=M.relaxed?0:.15;M.info=t;tut('info');
+function openInfo(l,t,first){if(!M||M.ended)return;const I=ING[t.id];M.slow=M.relaxed?0:.15;M.info=t;
+ if(!SV.learned[t.id]){SV.learned[t.id]=1;persist()}
  const tierLine={gold:'★ Gold: the real thing. Rare and pricey.',good:'Good stand-in, especially in a blend.',diff:'Makes a different swallow, not fufu.',wrong:'Wrong category for swallow.',decoy:'Tempting, but not the right texture.'}[I.tier];
- let ex='';if(t.exact){const p=findPay(M.wallet,I.price,true);ex=`<p class="note">🪙 <b>Exact change only.</b> ${p?`You have it: ${DEN.filter(d=>p.use[d]).map(d=>`${won(d)}×${p.use[d]}`).join(' + ')}.`:'You don\'t have the right coins for this one.'}</p>`}
- modal(`<div class="info"><div class="row" style="align-items:flex-start"><div id="if-art" style="width:72px;flex:none"></div><div class="grow"><h2 style="margin:0">${I.name}</h2>${I.ko?`<div class="muted">${I.ko}</div>`:''}<div><b>${wonU(I.price)}</b></div></div></div>
+ const shut=t.sold?'sold':lunchOn(l)?'lunch':'';
+ const ex=shut==='sold'?'<p class="note">품절 · <b>Sold out</b> at this stall. Another one will come along.</p>':shut==='lunch'?'<p class="note">🍱 점심시간 · This stall is on <b>lunch break</b>. Back in a few seconds.</p>':'';
+ modal(`<div class="info">${first?'<div class="pill" style="margin-bottom:6px">✨ New ingredient</div>':''}<div class="row" style="align-items:flex-start"><div id="if-art" style="width:72px;flex:none"></div><div class="grow"><h2 style="margin:0">${I.name}</h2>${I.ko?`<div class="muted">${I.ko}</div>`:''}<div><b>${wonU(I.price)}</b></div></div></div>
  <p style="margin:10px 0 6px">${I.desc}</p>
  <div class="adds"><div><b>Pull:</b> ${pullWord(I.pull)}</div><div><b>Smooth:</b> ${smoothWord(I.sm)}</div><div><b>Taste:</b> ${I.tw}</div></div>
  <p class="muted" style="margin:8px 0">${tierLine}</p>${ex}
- ${showUsd()&&!M.wonNote?(M.wonNote=1,`<p class="muted" style="font-size:.8rem;margin:0 0 6px">💱 ${WON_NOTE}</p>`):''}<p class="muted" style="font-size:.8rem;margin:0 0 10px">${M.relaxed?'The rows are paused while this card is open.':'The rows slow down while this card is open. Mama\'s clock keeps going.'}</p>
- <div class="row"><button class="alt grow" id="if-x">Close</button><button class="gold grow" id="if-buy">Buy ${won(I.price)}</button></div></div>`,b=>{
+ ${showUsd()&&!M.wonNote?(M.wonNote=1,`<p class="muted" style="font-size:.8rem;margin:0 0 6px">💱 ${WON_NOTE}</p>`):''}<p class="muted" style="font-size:.8rem;margin:0 0 10px">${first?'Next time, one tap buys it. Press and hold to read this again. ':''}${M.relaxed?'The rows are paused while this card is open.':'The rows slow down while this card is open.'}</p>
+ <div class="col"><button class="gold bigbuy" id="if-buy" ${shut?'disabled':''}>${shut==='sold'?'Sold out (품절)':shut==='lunch'?'Closed for lunch':`Buy ${wonT(I.price)}`}</button><button class="alt" id="if-x">Not now</button></div></div>`,b=>{
   b.querySelector('#if-art').appendChild(tileCanvas(t.id,false,72));
   b.querySelector('#if-x').onclick=closeInfo;
-  b.querySelector('#if-buy').onclick=()=>{closeInfo();if(l.tiles.includes(t))buy(l,t);else toast('Too late, it rolled past!')};});}
-function closeInfo(){closeModal();if(M){M.slow=1;M.info=null}}
+  b.querySelector('#if-buy').onclick=()=>{closeInfo();buy(l,t)};});}
+function closeInfo(){closeModal();if(M){M.slow=1;M.info=null;tut('info')}}
 
 /* ---------- level 1 tutorial (coach bubble over the market) ---------- */
-const TUT={start:'👆 Press and hold a tile, or tap its ⓘ, to see what it adds.',info:'Nice! Now tap a tile once to buy it.',buy:'Bought! Now press and hold a tile, or tap its ⓘ, to see what it adds.',meter:'👇 This meter shows Pull, Smooth and Taste. Try to fill all three, then Go cook.'};
-function coach(k){const c=$('#coach');$('#meter').classList.remove('glow','ring');if(!k){c.className='coach';return}c.className='coach on';$('#coachtxt').textContent=TUT[k];say(TUT[k]);
- if(k==='meter'){$('#meter').classList.add('ring');if(!SV.reduced)$('#meter').classList.add('glow')}}
-function tut(ev){if(!M||!M.tut||M.tut.done)return;const s=M.tut;
- if(ev==='info')s.info=true;if(ev==='buy')s.buy=true;
+const TUT={learn:'👆 Tap any tile to learn what it adds.',meter:'👇 This meter shows Pull, Smooth and Taste. Try to fill all three.',cook:'🍲 Happy with your basket? Tap Go cook. You don\'t need all 5.'};
+function coach(k){const c=$('#coach');$('#meter').classList.remove('glow','ring');$('#b-cook').classList.remove('ring');if(!k){c.className='coach';return}c.className='coach on';$('#coachtxt').textContent=TUT[k];say(TUT[k]);
+ if(k==='meter'){$('#meter').classList.add('ring');if(!SV.reduced)$('#meter').classList.add('glow')}
+ if(k==='cook')$('#b-cook').classList.add('ring');}
+/* one step at a time: learn (open a card) → meter → Go cook */
+function tut(ev){if(!M||!M.tut||M.tut.done)return;const s=M.tut;clearTimeout(M.tutT);
+ const go=k=>{s.step=k;coach(k);if(k==='meter')M.tutT=setTimeout(()=>tut('timer'),9000);if(k==='cook')M.tutT=setTimeout(()=>tut('timer'),9000)};
  if(ev==='done'){s.done=true;coach(null);return}
- if(s.info&&s.buy){if(!s.meter){s.meter=true;coach('meter');clearTimeout(M.tutT);M.tutT=setTimeout(()=>tut('done'),9000)}}
- else coach(s.info?'info':'buy');}
+ if(s.step==='learn'&&(ev==='info'||ev==='buy'))go('meter');
+ else if(s.step==='meter'&&((ev==='buy'&&M.basket.length>=2)||ev==='timer'))go('cook');
+ else if(s.step==='cook'&&ev==='timer'){s.done=true;coach(null)}
+ else if(s.step==='meter'||s.step==='cook')M.tutT=setTimeout(()=>tut('timer'),9000);}
+
+/* ---------- the market ajumma (stall owner) ---------- */
+function drawAjumma(c,cx,cy,r){c.save();c.translate(cx,cy);const s=r/100;c.scale(s,s);
+ /* friendly stall owner: short curly bob, flowered blouse, work apron */
+ c.beginPath();c.ellipse(0,118,90,48,0,Math.PI,0);c.lineTo(90,140);c.lineTo(-90,140);c.closePath();c.fillStyle='#c94f6d';c.fill();
+ c.save();c.clip();c.fillStyle='#f4c6d2';for(let i=-4;i<=4;i++)for(let j=0;j<3;j++){c.beginPath();c.arc(i*24+(j%2)*12,84+j*18,4,0,7);c.fill()}c.restore();
+ fp(c,'M-36 140 L-36 88 C-18 82 18 82 36 88 L36 140Z','#3f6f9e','#2c5078',2);sp(c,'M-34 90 L-50 76','#2c5078',5);sp(c,'M34 90 L50 76','#2c5078',5);
+ c.fillStyle='#d9a582';c.fillRect(-13,50,26,30);
+ c.fillStyle='#3a2c28';el(c,0,0,72,66,0,'#3a2c28');for(const [x,y] of [[-64,18],[64,18],[-70,-6],[70,-6]]){c.beginPath();c.arc(x,y,15,0,7);c.fill()}
+ el(c,0,12,50,58,0,'#e8b991');c.fillStyle='#3a2c28';
+ for(const [x,y] of [[-46,-26],[-30,-46],[-10,-52],[12,-52],[32,-46],[48,-26]]){c.beginPath();c.arc(x,y,15,0,7);c.fill()}
+ dt(c,[[-50,30,4.5],[50,30,4.5]],'#e8e2d6');
+ c.lineCap='round';sp(c,'M-28 6 C-22 -2 -14 -2 -8 6','#2a1a10',4.5);sp(c,'M8 6 C14 -2 22 -2 28 6','#2a1a10',4.5);
+ sp(c,'M-30 -10 L-14 -12','#3a2c28',3.5);sp(c,'M14 -12 L30 -10','#3a2c28',3.5);
+ sp(c,'M-15 36 C-6 45 6 45 15 36','#8a3a2a',4.5);el(c,-32,24,9,5,0,'rgba(230,110,110,.38)');el(c,32,24,9,5,0,'rgba(230,110,110,.38)');
+ c.restore();}
+function ajmFace(){const cv=$('#ajmface');const d=DPR();if(!cv._w){cv._w=cv.width;cv._h=cv.height;cv.style.width=cv._w+'px';cv.style.height=cv._h+'px';cv.width=cv._w*d;cv.height=cv._h*d;cv._d=d}
+ const c=cv.getContext('2d');c.setTransform(cv._d,0,0,cv._d,0,0);c.clearRect(0,0,cv._w,cv._h);drawAjumma(c,cv._w/2,cv._h*.52,cv._w*.4);}
+let ajmT=0;
+function ajm(text,note){if(!M)return;const e=$('#ajm');$('#ajmtxt').textContent=text;$('#ajmnote').textContent=note||'';e.className='ajm on';say('Ajumma: '+text+(note?' '+note:''));M.ajmLast=text;
+ clearTimeout(ajmT);ajmT=setTimeout(()=>{e.className='ajm'},note?6500:3200);}
+const AJM_LINES={toran:'토란! Good choice, that\'s good for soup!',ma:'마! Very healthy. My customers love it.',potstarch:'감자전분! Good for frying batter too.',sweetpot:'고구마! So sweet roasted in winter.',
+ tteok:'떡! For tteokbokki? 😊',glutinous:'찹쌀가루! For rice cakes?',potato:'감자! Fresh today.',kudzu:'칡! Good for noodles too.',_:'감사합니다! Thank you!'};
+let SVC_FORCE=null;
+function ajmAfterBuy(id){if(!M||M.ended)return;const n=M.basket.length;
+ if(M.lanes.some(l=>l.cfg.frame==='itaewon'&&l.cfg.pool[id]))return;
+ const svcChance=SVC_FORCE!==null?SVC_FORCE:.5;
+ if(!M.svc&&n>=2&&n<=4&&(M.svcRoll===undefined?(M.svcRoll=Math.random()):M.svcRoll)<svcChance&&(n===2||n===3)){M.svc=true;const amt=ING[id].price>=4000?1000:500;addMoney(M.wallet,amt);renderWallet();SFX.clink();
+  setTimeout(()=>{if(M&&!M.ended)ajm(`서비스! A little extra for you: ${won(amt)} back.`,'💡 서비스 (“service”) is a free extra. Korean market sellers often add one for their customers.')},700);return}
+ if(!M.said[id]&&Math.random()<.45){M.said[id]=1;setTimeout(()=>{if(M&&!M.ended)ajm(AJM_LINES[id]||AJM_LINES._)},700)}}
+
+/* ---------- Did you know? (same plant, different name facts first) ---------- */
+const DYK={
+ ma:[1,'Korean yam (ma, 마) and West African white yam are both true yams, in the same Dioscorea family. Different names, close cousins.'],
+ toran:[1,'Korean toran (토란) is taro. In Nigeria, taro is one of the plants called cocoyam.'],
+ tapioca:[1,'Tapioca starch and Nigerian fufu come from the same plant: tapioca is the starch of cassava.'],
+ cassava:[1,'Cassava goes by many names: manioc, yuca, and in Korea 카사바. Tapioca starch is made from it too.'],
+ garri:[1,'Garri and much Nigerian fufu are both cassava. Garri is grated, fermented and roasted; fufu is soaked and fermented.'],
+ puna:[1,'Pounded white yam is iyan (pounded yam), a beloved swallow in its own right, not just a stand-in for fufu.'],
+ potstarch:[1,'Potato starch and the potato flakes many cooks abroad use for fufu come from the same plant, the potato.'],
+ plantain:[1,'Plantains and sweet dessert bananas are both Musa. Plantain is the starchy cooking kind.'],
+ sweetpot:[0,'Despite the name, sweet potato (고구마) is not a true potato or a yam. It belongs to the morning glory family.'],
+ potato:[0,'Potato and sweet potato are not close relatives: potato is in the nightshade family, sweet potato in the morning glory family.'],
+ kudzu:[0,'Kudzu (칡) is a vine in the pea family. Its starch comes from the big root.'],
+ glutinous:[0,'Glutinous rice (찹쌀) has no gluten. “Glutinous” just means sticky.'],
+ wheat:[0,'The same wheat flour that makes Nigerian wheat meal also makes Korean kalguksu noodles.'],
+ semolina:[0,'Semolina is coarse flour from durum wheat, the wheat used for pasta. In Nigeria it becomes semo.'],
+ bean:[0,'Moin moin and akara are both made from peeled black-eyed peas: one is steamed, the other fried.'],
+ tteok:[0,'Some tteok (떡) is made by pounding steamed rice, much as fufu is pounded from cooked roots.'],
+ fufu:[0,'Packaged fufu flour can be cassava, plantain, yam, or a mix. Read the bag!']};
+function pickDYK(ids){const u=[...new Set(ids)].filter(i=>DYK[i]);if(!u.length)return DYK.puna[1];const pri=u.filter(i=>DYK[i][0]);const pool=pri.length?pri:u;return DYK[pool[Math.floor(Math.random()*pool.length)]][1];}
+
 $('#coachx').onclick=()=>{if(M&&M.tut)M.tut.done=true;coach(null)};
 $('#mbubble').onclick=chatHistory;
 document.addEventListener('visibilitychange',()=>{if(document.hidden){if(curScreen==='s-market')pause();if(curScreen==='s-cook'&&CK&&!CK.done&&!CK.paused)cookPause();}});
@@ -765,28 +853,40 @@ if(window.ResizeObserver){new ResizeObserver(onResize).observe($('#mcv'));new Re
 
 /* ================= COOKING (3-round rhythm) ================= */
 const ccv=$('#ccv'),cctx=ccv.getContext('2d');let CK=null;
-const ROUNDS=[{name:'Pound',hint:'Tap to pound, on the beat.',sfx:'thud'},{name:'Turn',hint:'Swipe or tap to turn the dough, on the beat.',sfx:'whoosh'},{name:'Add water',hint:'Tap to add a splash, on the beat.',sfx:'splash'}];
+const ROUNDS=[{name:'Pound',hint:'Tap to pound, on the beat.',sfx:'thud'},{name:'Add water',hint:'How will you add the water?',choice:true},{name:'Turn',hint:'Tap to turn and smooth the dough, on the beat.',sfx:'whoosh'}];
+const RHYTHM_ROUNDS=ROUNDS.filter(r=>!r.choice).length;
 const BEATS=6;
 function sizeCook(){const r=ccv.getBoundingClientRect(),d=DPR();ccv.width=Math.round(r.width*d);ccv.height=Math.round(r.height*d);if(CK){CK.W=r.width;CK.H=r.height}}
-function startCook(){show('s-cook');$('#cookhelp').textContent=(SV.reduced?'Tap when the gold dial fills up and flashes green.':'Tap when the white ring meets the gold circle.')+' Steady beats make smooth fufu. Rushing makes lumps.';const bi=M.L.beat*(M.relaxed?1.15:1);CK={bi,round:-1,scores:[],extra:0,fx:[],pest:0,done:false,paused:false};sizeCook();nextRound();requestAnimationFrame(cookLoop);}
+function startCook(){show('s-cook');$('#cookhelp').textContent=(SV.reduced?'Tap when the gold dial fills up and flashes green.':'Tap when the white ring meets the gold circle.')+' The timing is forgiving. What you bought matters most.';const bi=M.L.beat*(M.relaxed?1.15:1);CK={bi,round:-1,scores:[],extra:0,fx:[],pest:0,done:false,paused:false,phase:null,water:null,auto:false};
+ $('#water').hidden=true;const ab=$('#b-auto');ab.hidden=!M.relaxed;ab.textContent='🤲 Auto-pound for me';ab.classList.remove('on');sizeCook();nextRound();requestAnimationFrame(cookLoop);}
+function showWater(){CK.phase='water';const W=$('#water'),opts=[['slow','💧 Add water a little at a time'],['all','🌊 Pour it all in at once']];if(Math.random()<.5)opts.reverse();
+ W.innerHTML=`<p class="wq"><b>The dough is pounded. Now add warm water.</b></p><div class="col">${opts.map(o=>`<button class="alt" data-w="${o[0]}">${o[1]}</button>`).join('')}</div>`;W.hidden=false;
+ W.querySelectorAll('button').forEach(b=>b.onclick=()=>chooseWater(b.dataset.w));W.querySelector('button').focus({preventScroll:true});say('Add water. Choose: a little at a time, or pour it all in.');}
+function chooseWater(v){if(!CK||CK.water)return;CK.water=v;SFX.splash();const W=$('#water'),ok=v==='slow';
+ W.innerHTML=`<p class="wres ${ok?'ok':'bad'}">${ok?'✓ <b>A little at a time.</b> The dough drinks it in evenly, so it stays smooth.':'✗ <b>All at once.</b> The outside goes soggy and the inside stays in dry lumps.'}</p><button class="gold" id="w-go" style="width:100%">Next: Turn the dough →</button>`;
+ say(W.textContent);W.querySelector('#w-go').onclick=()=>{W.hidden=true;CK.phase=null;nextRound()};W.querySelector('#w-go').focus({preventScroll:true});}
 function nextRound(){CK.round++;if(CK.round>=3){finishCook();return}const R=ROUNDS[CK.round];$('#cround').textContent=`Round ${CK.round+1} of 3 · ${R.name}`;$('#chint').textContent=R.hint;
+ if(R.choice){showWater();return}startRhythm();}
+function startRhythm(){const R=ROUNDS[CK.round];
  const t0=now()+300;CK.lead=[t0,t0+CK.bi];CK.beats=[];for(let i=0;i<BEATS;i++)CK.beats.push({t:t0+CK.bi*(2+i),j:null});CK.ticked=-1;say(`Round ${CK.round+1}: ${R.name}. ${R.hint}`);}
-const WIN=()=>Math.min(340,CK.bi*.42);
-function cookTap(){if(!CK||CK.done||CK.paused||CK.round>2)return;ac();const tn=now();const R=ROUNDS[CK.round];SFX[R.sfx]();CK.pest=1;
+const WIN=()=>Math.min(430,CK.bi*.49);
+function cookTap(){if(!CK||CK.done||CK.paused||CK.round>2||CK.phase==='water'||ROUNDS[CK.round].choice)return;ac();const tn=now();const R=ROUNDS[CK.round];SFX[R.sfx]();CK.pest=1;
  if(tn<CK.beats[0].t-CK.bi*.5){CK.fx.push({label:'Wait for the ring…',col:'#f2d8b8',t:tn});return}
  let best=null,bd=1e9;for(const b of CK.beats){if(b.j!==null)continue;const dd=Math.abs(tn-b.t);if(dd<bd){bd=dd;best=b}}
- if(best&&bd<=WIN()){const sc=bd<110?1:bd<210?.7:.4;best.j=sc;CK.scores.push(sc);CK.fx.push({label:sc===1?'Perfect!':sc>=.7?'Good':'Close',col:sc===1?'#7CFC9A':sc>=.7?'#ffe066':'#ffb366',t:tn});}
- else{CK.extra++;CK.fx.push({label:'Rushed! Lumps!',col:'#ff7a7a',t:tn});}}
+ if(best&&bd<=WIN()){const sc=bd<=200?1:bd<=350?.8:.55;best.j=sc;CK.scores.push(sc);CK.fx.push({label:sc===1?'Perfect!':sc>=.8?'Good':'Close',col:sc===1?'#7CFC9A':sc>=.8?'#ffe066':'#ffb366',t:tn});}
+ else{CK.extra++;CK.fx.push({label:'Easy… wait for the ring',col:'#ffb366',t:tn});}}
 ccv.addEventListener('pointerdown',e=>{e.preventDefault();cookTap();});
-document.addEventListener('keydown',e=>{if(curScreen==='s-cook'&&(e.code==='Space'||e.code==='Enter')&&!$('#modal').classList.contains('on')){e.preventDefault();cookTap()}if(e.code==='Escape'&&curScreen==='s-market'){if(M&&M.info)closeInfo();else pause()}if((e.code==='Enter'||e.code==='Space')&&document.activeElement===$('#mbubble')){e.preventDefault();chatHistory()}});
+document.addEventListener('keydown',e=>{if(curScreen==='s-cook'&&(e.code==='Space'||e.code==='Enter')&&!$('#modal').classList.contains('on')&&!(document.activeElement&&document.activeElement.tagName==='BUTTON')){e.preventDefault();cookTap()}if(e.code==='Escape'&&curScreen==='s-market'){if(M&&M.info)closeInfo();else pause()}if((e.code==='Enter'||e.code==='Space')&&document.activeElement===$('#mbubble')){e.preventDefault();chatHistory()}});
 function cookPause(){CK.paused=true;const pt=now();modal(`<h2>Paused</h2><p>The pot can wait a moment.</p><button class="gold" id="cp" style="width:100%">Resume</button>`,b=>b.querySelector('#cp').onclick=()=>{closeModal();const sh=now()-pt;CK.beats.forEach(x=>x.t+=sh);CK.lead=CK.lead.map(x=>x+sh);CK.paused=false;});}
-function smoothNow(){const judged=CK.scores.length;if(!judged)return 1;const sum=CK.scores.reduce((a,b)=>a+b,0);return clamp(sum/judged-.05*CK.extra,0,1);}
+function smoothNow(){const judged=CK.scores.length;const r=judged?clamp(CK.scores.reduce((a,b)=>a+b,0)/judged-.03*CK.extra,0,1):1;return CK.water==='all'?Math.min(r,.45):r;}
 function cookLoop(){if(!CK||CK.done)return;const tn=now();
- if(!CK.paused){
+ if(!CK.paused&&CK.phase!=='water'&&!ROUNDS[CK.round].choice){
+  if(CK.auto)for(const b of CK.beats)if(b.j===null&&tn>=b.t-15&&tn<=b.t+WIN()){b.j=.8;CK.scores.push(.8);CK.fx.push({label:'Good',col:'#ffe066',t:tn});SFX[ROUNDS[CK.round].sfx]();CK.pest=1}
   CK.lead.forEach((t,i)=>{if(tn>=t&&CK.ticked<i){CK.ticked=i;SFX.tick()}});
   CK.beats.forEach((b,i)=>{if(tn>=b.t&&CK.ticked<2+i){CK.ticked=2+i;SFX.tick()}if(b.j===null&&tn>b.t+WIN()){b.j=0;CK.scores.push(0);CK.fx.push({label:'Missed',col:'#ff9a9a',t:tn});SFX.miss()}});
   if(tn>CK.beats[BEATS-1].t+500){nextRound();if(CK.done)return}
-  CK.pest=Math.max(0,CK.pest-.12);drawCook(tn);}
+  CK.pest=Math.max(0,CK.pest-.12);}
+ if(CK.beats)drawCook(tn);
  requestAnimationFrame(cookLoop);}
 function doughColor(){if(!M||!M.basket.length)return '#f4efe2';let r=0,g=0,b=0,n=0;for(const it of M.basket){const h=ING[it.id].flesh;r+=parseInt(h.substr(1,2),16);g+=parseInt(h.substr(3,2),16);b+=parseInt(h.substr(5,2),16);n++}return `rgb(${r/n|0},${g/n|0},${b/n|0})`;}
 function drawDough(c,x,y,rw,rh,col,lumps){el(c,x,y,rw,rh,0,col,'rgba(0,0,0,.15)',1.5);for(let i=0;i<lumps;i++){const a=i*2.1+.4;el(c,x+Math.cos(a)*rw*.55,y+Math.sin(a)*rh*.45-2,rw*.13,rh*.2,0,col,'rgba(0,0,0,.25)',1.2)}
@@ -794,34 +894,36 @@ function drawDough(c,x,y,rw,rh,col,lumps){el(c,x,y,rw,rh,0,col,'rgba(0,0,0,.15)'
 function drawCook(tn){const c=cctx,d=DPR(),W=CK.W,H=CK.H;c.setTransform(d,0,0,d,0,0);c.clearRect(0,0,W,H);
  const cx=W/2,R=clamp(Math.min(W,H)*.1,30,50),ty=R*1.9+6;
  c.beginPath();c.arc(cx,ty,R,0,7);c.fillStyle='rgba(255,255,255,.08)';c.fill();c.lineWidth=5;c.strokeStyle='#ffd23f';c.stroke();
- const nb=CK.beats.find(b=>b.j===null);
+ const choice=!!ROUNDS[CK.round].choice,nb=choice?null:CK.beats.find(b=>b.j===null);
  if(nb){const k=(nb.t-tn)/CK.bi;
   if(SV.reduced){if(k<1){c.beginPath();c.moveTo(cx,ty);c.arc(cx,ty,R-6,-Math.PI/2,-Math.PI/2+Math.PI*2*clamp(1-k,0,1));c.closePath();c.fillStyle=Math.abs(k)<.15?'rgba(124,252,154,.6)':'rgba(255,210,63,.45)';c.fill()}}
   else if(k<1.2&&k>-.2){c.beginPath();c.arc(cx,ty,R*(1+1.25*clamp(k,0,1.2)),0,7);c.lineWidth=4;c.strokeStyle=Math.abs(k)<.15?'#7CFC9A':'#fff';c.stroke()}}
- const lead=tn<CK.beats[0].t-CK.bi*.5;
+ const lead=!choice&&tn<CK.beats[0].t-CK.bi*.5;
  tx(c,lead?(tn<CK.lead[0]?'Ready…':tn<CK.lead[1]?'2':'1'):ROUNDS[CK.round].name.toUpperCase(),cx,ty,lead?R*.55:R*.3,'#fff',900);
- for(let i=0;i<BEATS;i++){const b=CK.beats[i];dt(c,[[cx-(BEATS-1)*9+i*18,ty+R+22]],b.j===null?'rgba(255,255,255,.25)':b.j>=1?'#7CFC9A':b.j>=.7?'#ffe066':b.j>0?'#ffb366':'#ff7a7a',5)}
+ if(!choice)for(let i=0;i<BEATS;i++){const b=CK.beats[i];dt(c,[[cx-(BEATS-1)*9+i*18,ty+R+22]],b.j===null?'rgba(255,255,255,.25)':b.j>=1?'#7CFC9A':b.j>=.7?'#ffe066':b.j>0?'#ffb366':'#ff7a7a',5)}
  const mw=Math.min(W*.42,H*.34,180),my=Math.min(H-mw*.62,H*.55+mw*.4);const lumps=Math.round((1-smoothNow())*7);
  c.fillStyle='#7a4a24';c.beginPath();c.moveTo(cx-mw/2,my-mw*.32);c.lineTo(cx+mw/2,my-mw*.32);c.lineTo(cx+mw*.34,my+mw*.3);c.lineTo(cx-mw*.34,my+mw*.3);c.closePath();c.fill();
  c.fillStyle='#5e3818';c.fillRect(cx-mw*.42,my-mw*.06,mw*.84,mw*.07);c.fillRect(cx-mw*.38,my+mw*.12,mw*.76,mw*.06);
  el(c,cx,my-mw*.32,mw/2,mw*.1,0,'#4a2a12');drawDough(c,cx,my-mw*.34,mw*.38,mw*.09,doughColor(),lumps);
  const rd=CK.round;
  if(rd===0){const py=my-mw*.36-mw*.7+CK.pest*mw*.3;rr(c,cx-mw*.07,py,mw*.14,mw*.7,mw*.07);c.fillStyle='#b07a44';c.fill();c.strokeStyle='#6b4420';c.lineWidth=2;c.stroke()}
- else if(rd===1){c.save();c.translate(cx,my-mw*.36);c.rotate(-.5+CK.pest*1.0);rr(c,-6,-mw*.6,12,mw*.6,6);c.fillStyle='#c48a4e';c.fill();c.strokeStyle='#6b4420';c.lineWidth=2;c.stroke();c.restore()}
- else{c.save();c.translate(cx+mw*.35,my-mw*.7);c.rotate(.6*CK.pest);fp(c,'M-22 -18 L22 -18 L18 18 L-18 18Z','#4a90c8','#2a5a84',2);c.restore();if(CK.pest>.3)dt(c,[[cx+mw*.2,my-mw*.5,4],[cx+mw*.1,my-mw*.45,3],[cx+mw*.15,my-mw*.4,3.5]],'#9ad0ff')}
+ else if(rd===2){c.save();c.translate(cx,my-mw*.36);c.rotate(-.5+CK.pest*1.0);rr(c,-6,-mw*.6,12,mw*.6,6);c.fillStyle='#c48a4e';c.fill();c.strokeStyle='#6b4420';c.lineWidth=2;c.stroke();c.restore()}
+ else{c.save();c.translate(cx+mw*.35,my-mw*.7);c.rotate(.6*CK.pest);fp(c,'M-22 -18 L22 -18 L18 18 L-18 18Z','#4a90c8','#2a5a84',2);c.restore();if(CK.pest>.3||(CK.water&&CK.phase==='water'))dt(c,[[cx+mw*.2,my-mw*.5,4],[cx+mw*.1,my-mw*.45,3],[cx+mw*.15,my-mw*.4,3.5]],'#9ad0ff')}
  tx(c,lumps===0?'Smooth':lumps<3?'A few lumps':'Lumpy!',cx,my+mw*.46,13,'#f2d8b8',700);
  CK.fx=CK.fx.filter(f=>tn-f.t<700);const f=CK.fx[CK.fx.length-1];if(f){const k=(tn-f.t)/700;c.globalAlpha=1-k;tx(c,f.label,cx,ty+R+52-(SV.reduced?0:k*14),20,f.col,900);c.globalAlpha=1}}
-function finishCook(){CK.done=true;const sum=CK.scores.reduce((a,b)=>a+b,0);M.S=clamp(sum/(3*BEATS)-.05*CK.extra,0,1);M.extra=CK.extra;setTimeout(goTaste,350);}
+function finishCook(){CK.done=true;const sum=CK.scores.reduce((a,b)=>a+b,0);M.S=clamp(sum/(RHYTHM_ROUNDS*BEATS)-.03*CK.extra,0,1);M.extra=CK.extra;M.water=CK.water||'slow';setTimeout(goTaste,200);}
+$('#b-auto').onclick=()=>{if(!CK)return;CK.auto=!CK.auto;$('#b-auto').classList.toggle('on',CK.auto);$('#b-auto').textContent=CK.auto?'🤲 Auto-pound: on':'🤲 Auto-pound for me'};
 
 /* ================= EVALUATION =================
    Ingredients decide pull + taste; cooking decides smoothness. Duplicates count less each time
    (1, 1/2, 1/4…), and a blend of two or three good starches earns a bonus, so balance beats stacking gold. */
-function evaluate(){const B=M.basket.map(b=>b.id),S=M.S||0;const R={S,empty:!B.length,ids:B};
- if(!B.length){Object.assign(R,{H:0,react:1,P:0,T:0,lines:['The pot is empty. Just hot water and hope.'],sub:'She hugs you anyway. "Come. Tomorrow we go to the market together."',tip:'Even a regular Korean market sells potato starch and Korean yam (ma). Together they make a decent swallow.'});return R}
+function evaluate(){const B=M.basket.map(b=>b.id),S=M.S===undefined?1:M.S,water=M.water||'slow';const wOK=water==='all'?0:1,Ck=clamp(.55*S+.45*wOK,0,1);const R={S:Ck,rhythm:S,water,empty:!B.length,ids:B};
+ if(!B.length){Object.assign(R,{H:0,S:0,react:1,P:0,T:0,lines:['The pot is empty. Just hot water and hope.'],sub:'She hugs you anyway. "Come. Tomorrow we go to the market together."',tip:'Even a regular Korean market sells potato starch and Korean yam (ma). Together they make a decent swallow.'});return R}
  const pr=profile(B);const {W,P,T,Sm,sweet,gluey,tteok,beany,jelly,chewy,pot,distinct,enough,top,mono,domDiff}=pr;
- const bal=distinct>=3?.18:distinct>=2?.12:0,Seff=S*(.7+.3*Sm/3);R.Sm=Sm;
+ const bal=distinct>=3?.18:distinct>=2?.12:0;R.Sm=Sm;
  let Q=clamp(((P/3)*.5+(T/3)*.5)*enough*.85+bal-(mono?.08:0),0,1);if(domDiff)Q=Math.max(Q,.7*enough);
- const H=Q*(.35+.65*Seff);
+ /* shopping (Q) dominates; technique (water + a forgiving rhythm) and the ingredients' own smoothness nudge it */
+ const H=Q*(.75+.25*Ck)*(.85+.15*Sm/3);
  let react=H<.35?1:H<.55?2:H<.76?3:4;
  if(domDiff)react=Math.min(react,3);
  const L=[];
@@ -831,7 +933,7 @@ function evaluate(){const B=M.basket.map(b=>b.id),S=M.S||0;const R={S,empty:!B.l
  else if(jelly>=.5)L.push('It wobbles like jelly instead of pulling.');
  else if(chewy>=.5)L.push('Very stretchy, but chewy like mochi.');
  else L.push(P>=2.5?'It pulls. It pulls well.':P>=1.7?'It stretches a little when you pull it.':P>=.8?'It breaks. Fufu should pull, not snap.':'It won\'t hold together at all.');
- L.push(S<.5?'Lumpy. The pounding was rushed.':Sm<1.6?'Well pounded, but grainy and firm in texture.':Seff>=.8?'Smooth, no lumps.':'Mostly smooth, with a few small lumps.');
+ L.push(!wOK?'Soggy outside, dry lumps inside. The water went in all at once.':S<.5?'A few lumps. The pounding drifted off the beat.':Sm<1.6?'Well made, but grainy and firm in texture.':Ck>=.8?'Smooth, no lumps.':'Mostly smooth, with a few small lumps.');
  if(beany>0)L.push('Something beany in here… that\'s a different dish.');
  else if(sweet>.34)L.push('But it\'s sweet? What did you put in?');
  else if(!domDiff)L.push(T>=2.4?'It tastes like home.':T>=1.5?'The taste is close, a little plain.':'The taste is off.');
@@ -840,7 +942,8 @@ function evaluate(){const B=M.basket.map(b=>b.id),S=M.S||0;const R={S,empty:!B.l
  if(domDiff){sub=domDiff==='garri'?'"Eba! It\'s not fufu, but eba I will eat."':domDiff==='semolina'?'"Semo! Not fufu, but I won\'t complain."':'"Wheat meal! Not fufu, but it\'s a real swallow."';
   tip='Eba, semo and wheat meal are real swallows, but fufu is its own thing: in much of Nigeria it means soaked, fermented cassava. Pounded yam (iyan) is another favorite.';}
  else if(beany>0)tip='Bean flour is for moin moin and akara, my child, not swallow. Keep it for breakfast.';
- else if(S<.5)tip='Pound steadily, my child. Don\'t rush. Lumps come from hurry.';
+ else if(!wOK)tip='Add the water a little at a time and keep turning, my child. All at once, it goes soggy and lumpy.';
+ else if(S<.5)tip='Find a steady beat when you pound. Steady hands make smooth fufu.';
  else if(tteok>=.4)tip='Tteok is pounded too, but it sets firm and chewy. Fufu has to stay soft enough to swallow.';
  else if(gluey>=.5)tip='Tapioca starch is cassava, yes, but only the starch. Alone it goes gummy. Mix it with something that has body, like yam.';
  else if(sweet>.34)tip='Sweet potato is lovely roasted, but it makes fufu sweet. Use just a little.';
@@ -859,23 +962,28 @@ function evaluate(){const B=M.basket.map(b=>b.id),S=M.S||0;const R={S,empty:!B.l
 
 /* ================= TASTE / MAMA / RESULTS ================= */
 let RES=null;const LINES=['','Ah. My child.','So-so.','Good try, my child.','Yes, my child, you listened.'];
-function goTaste(){show('s-taste');RES=evaluate();drawPlate($('#tcv'));const box=$('#sents');box.innerHTML='';
- RES.lines.forEach((l,i)=>setTimeout(()=>{const d=document.createElement('div');d.className='sent';d.textContent=l;box.appendChild(d)},SV.reduced?0:250+i*650));}
+let tasteT=[];
+function addSent(l){const box=$('#sents');if([...box.children].some(d=>d.textContent===l))return;const d=document.createElement('div');d.className='sent';d.textContent=l;box.appendChild(d)}
+function showAllSents(){tasteT.forEach(clearTimeout);tasteT=[];if(RES)RES.lines.forEach(addSent)}
+function goTaste(){show('s-taste');RES=evaluate();drawPlate($('#tcv'));$('#sents').innerHTML='';tasteT.forEach(clearTimeout);tasteT=[];
+ if(SV.reduced)showAllSents();else RES.lines.forEach((l,i)=>tasteT.push(setTimeout(()=>addSent(l),120+i*250)));}
+$('#s-taste').addEventListener('click',e=>{if(e.target.id!=='b-serve')showAllSents()});
 function drawPlate(cv){const d=DPR();if(!cv._w){cv._w=300;cv._h=190;cv.style.width='300px';cv.style.height='190px';cv.width=300*d;cv.height=190*d;cv._d=d}const c=cv.getContext('2d');c.setTransform(cv._d,0,0,cv._d,0,0);c.clearRect(0,0,300,190);
  el(c,140,140,112,30,0,'#fff','#d9c3a8',3);el(c,140,140,84,20,0,'#f5ede0');
  if(!RES.empty)drawDough(c,140,112,60,40,doughColor(),Math.round((1-RES.S)*7));
  else{sp(c,'M125 110 C115 90 135 80 125 60','rgba(150,130,110,.5)',3);sp(c,'M158 110 C148 90 168 80 158 60','rgba(150,130,110,.5)',3)}
  el(c,258,150,34,12,0,'#7a3b12');el(c,258,146,30,9,0,RES.empty?'#c9b9a3':'#d4881a');}
-function goMom(){show('s-mom');const R=RES;faceCanvas($('#momface'),R.react===1?0:R.react);$('#say').textContent=R.react===1?'…':'';
- ['#saysub','#tip','#resbox','#missed'].forEach(s=>$(s).innerHTML='');$('#b-retry').style.visibility=$('#b-next').style.visibility=$('#b-share').style.visibility='hidden';
+function goMom(){showAllSents();show('s-mom');const R=RES;
+ ['#saysub','#tip','#resbox','#missed','#dyk'].forEach(s=>$(s).innerHTML='');
  const reveal=()=>{if(curScreen!=='s-mom')return;faceCanvas($('#momface'),R.react);$('#say').textContent=(R.react===4?'⭐ ':R.react===3?'😊 ':'')+LINES[R.react];$('#saysub').textContent=R.sub;
   $('#tip').innerHTML='<b>Mama\'s tip:</b> '+R.tip;say(LINES[R.react]+' '+R.tip);if(R.react===4)SFX.chime();else if(R.react===1)SFX.sad();results();
-  $('#b-retry').style.visibility=$('#b-next').style.visibility=$('#b-share').style.visibility='visible';};
- setTimeout(reveal,R.react===1?(SV.reduced?900:2200):(SV.reduced?0:450));}
-function results(){const R=RES,n=M.n;const stars=1+(R.react>=3?1:0)+(R.react===4?1:0);
- const left=M.relaxed?0:Math.max(0,M.dur-M.t);const score=Math.round(R.H*1000)+(M.relaxed||R.empty?0:Math.round(left*3));R.score=score;R.stars=stars;
- const prev=SV.best[n],newBest=prev===undefined||score>prev;if(newBest)SV.best[n]=score;SV.stars[n]=Math.max(SV.stars[n]||0,stars);SV.faces[R.react]=1;SV.unlocked=Math.max(SV.unlocked,Math.min(3,n+1));persist();
- $('#resbox').innerHTML=`<div style="font-size:1.6rem">${starsHTML(stars)}</div><div><b>Score ${score}</b> · ${newBest?'<span class="pill">New best!</span>':`Best ${SV.best[n]}`}</div><small class="muted">${M.relaxed?'Relaxed mode, no time bonus':R.empty?'No time bonus for an empty pot':left<1?'Mama arrived before you finished, so no time bonus':`Includes a time bonus for ${Math.round(left)}s to spare`}. There's no fail, just Mama's face.</small>`;
+  };
+ reveal();}
+function results(){const R=RES,n=M.n;const stars=1+(R.react>=3?1:0)+(R.react===4?1:0);R.dyk=pickDYK(R.ids);$('#dyk').innerHTML=`💡 <b>Did you know?</b> ${R.dyk}`;
+ const left=M.relaxed?0:Math.max(0,M.dur-M.t),bonus=M.relaxed||R.empty||left<1?0:Math.round(left*3);const score=Math.round(R.H*1000)+bonus;R.score=score;R.stars=stars;R.bonus=bonus;
+ const prev=SV.best[n],newBest=prev===undefined||score>prev;if(newBest)SV.best[n]=score;SV.stars[n]=Math.max(SV.stars[n]||0,stars);SV.faces[R.react]=1;if(stars>=2)SV.unlocked=Math.max(SV.unlocked,Math.min(3,n+1));persist();
+ const nextLocked=n<3&&isLocked(n+1);
+ $('#resbox').innerHTML=`<div style="font-size:1.6rem">${starsHTML(stars)}</div><div><b>Score ${score}</b> · ${newBest?'<span class="pill">New best!</span>':`Best ${SV.best[n]}`}</div><small class="muted">${M.relaxed?'Relaxed mode: no clock, so no patience bonus.':R.empty?'No patience bonus for an empty pot.':bonus?`Includes Mama's patience bonus, +${bonus}: dinner was ready with ${Math.round(left)}s to spare, so she had time to sit down with tea ☕.`:'Dinner and Mama arrived together. No patience bonus, and that\'s fine.'} There's no fail, just Mama's face.</small>${nextLocked?`<div class="lockmsg" style="margin-top:6px">🔒 Get 2 ⭐ to unlock Level ${n+1}. Mama is patient, so try again anytime 😊<br><small class="muted">Or turn on Relaxed mode to open every level.</small></div>`:''}`;
  const inB=new Set(M.basket.map(b=>b.id)),val=i=>ING[i].pull+ING[i].taste+(ING[i].tier==='gold'?1.5:0);
  const cand=Object.keys(M.seen).filter(i=>!inB.has(i)&&(ING[i].tier==='gold'||ING[i].tier==='good')).sort((a,b)=>val(b)-val(a)).slice(0,3);
  let h='<b>What you missed:</b><ul style="margin:6px 0 0;padding-left:20px">';
@@ -883,10 +991,10 @@ function results(){const R=RES,n=M.n;const stars=1+(R.react>=3?1:0)+(R.react===4
  [...inB].filter(i=>ING[i].tier==='wrong'||ING[i].tier==='decoy').forEach(i=>{h+=`<li>Swap idea: <b>${ING[i].name}</b> → ${i==='potato'?'potato starch':i==='bean'?'Korean yam (ma)':'potato starch + Korean yam'} (${ING[i].name.toLowerCase()}: ${ING[i].why})</li>`});
  if(h.endsWith('padding-left:20px">'))h+='<li>Nothing! You spotted the good stuff and took it.</li>';
  $('#missed').innerHTML=h+'</ul>';
- $('#b-next').style.display=n<3?'':'none';$('#b-next').textContent=`Level ${n+1} →`;}
+ $('#b-next').style.display=n<3?'':'none';$('#b-next').disabled=nextLocked;$('#b-next').textContent=nextLocked?`🔒 Get 2 ⭐`:`Level ${n+1} →`;}
 $('#b-serve').onclick=goMom;
 $('#b-retry').onclick=()=>startLevel(M.n);
-$('#b-next').onclick=()=>levelCard(Math.min(3,M.n+1));
+$('#b-next').onclick=()=>{const n=Math.min(3,M.n+1);isLocked(n)?lockCard(n):levelCard(n)};
 $('#b-home').onclick=goTitle;
 const GAME_URL='https://chicafricanculture.github.io/fufu-for-mama/';
 function shareText(){const R=RES,n=M.n,st='⭐'.repeat(R.stars)||'0 stars';
@@ -929,12 +1037,17 @@ function shareCard(){const R=RES,cv=document.createElement('canvas');cv.width=12
  const B=M.basket.map(b=>b.id);if(B.length)B.forEach((id,i)=>{c.save();c.translate(58+i*124,412);c.scale(1.08,1.08);drawTile(c,id,'none');c.restore()});
  else{c.fillStyle='#6b5a4c';c.font=`700 28px ${FONT}`;c.fillText('Empty basket… but Mama came anyway.',60,480)}
  c.fillStyle='rgba(255,255,255,.75)';c.beginPath();c.arc(980,290,190,0,7);c.fill();c.save();c.beginPath();c.arc(980,290,190,0,7);c.clip();drawMom(c,980,300,150,R.react);c.restore();
+ if(R.dyk){c.textAlign='left';const words=('Did you know? '+R.dyk).split(' ');let fs2=22,lines;
+  const wrap=()=>{c.font=`600 ${fs2}px ${FONT}`;lines=[''];for(const w of words){const t2=(lines[lines.length-1]+' '+w).trim();if(c.measureText(t2).width>665){lines.push(w)}else lines[lines.length-1]=t2}};
+  wrap();while(lines.length>2&&fs2>17){fs2--;wrap()}
+  if(lines.length<=2){const pre='Did you know?';c.font=`800 ${fs2}px ${FONT}`;c.fillStyle='#7a2e12';c.fillText(pre,58,572);const wb=c.measureText(pre+' ').width;
+   c.font=`600 ${fs2}px ${FONT}`;c.fillStyle='#5a3b22';c.fillText(lines[0].slice(pre.length).trim(),58+wb,572);if(lines[1])c.fillText(lines[1],58,572+fs2+6)}}
  c.textAlign='right';c.fillStyle='#7a2e12';c.font=`800 30px ${FONT}`;c.fillText('What\'s your fufu?',1150,560);
  c.fillStyle='#5a3b22';c.font=`600 22px ${FONT}`;c.fillText('By Ivy Newton, The African Gourmet',1150,598);
  try{return cv.toDataURL('image/png')}catch(e){return ''}}
 
 /* ================= RECIPE BOOK / FACES / SETTINGS ================= */
-function book(){const n=ORDER.filter(i=>SV.recipes[i]).length;modal(`<h2>📖 Recipe book <small class="muted">${n}/${ORDER.length}</small></h2><p class="muted" style="margin-top:0">Buy an ingredient to unlock its card.</p><div class="grid" id="bk"></div><button class="alt" id="bk-x" style="width:100%;margin-top:12px">Close</button>`,b=>{
+function book(){const n=ORDER.filter(i=>SV.recipes[i]).length;modal(`<h2>📖 Recipe book <small class="muted">${n}/${ORDER.length}</small></h2><p class="gloss" style="margin-top:0">${GLOSS}</p><p class="muted" style="margin-top:0">Buy an ingredient to unlock its card.</p><div class="grid" id="bk"></div><button class="alt" id="bk-x" style="width:100%;margin-top:12px">Close</button>`,b=>{
  const G=b.querySelector('#bk');for(const id of ORDER){const I=ING[id],u=!!SV.recipes[id],d=document.createElement('div');d.className='rcard'+(u?'':' locked');const cv=tileCanvas(id,!u);cv.style.maxWidth='96px';d.appendChild(cv);
   const t=document.createElement('div');t.innerHTML=u?`<div class="tier" style="color:${TIERCOL[I.tier]}">${TIERNAME[I.tier]}</div><b>${I.name}</b>${I.ko?` <span class="muted">${I.ko}</span>`:''}<div>${I.fact}</div>`:`<div class="tier muted">Locked</div><b>???</b><div class="muted">Find it at the market.</div>`;d.appendChild(t);G.appendChild(d)}
  b.querySelector('#bk-x').onclick=closeModal;});}
@@ -955,7 +1068,7 @@ function settings(fromPause){modal(`<h2>Settings</h2>
  b.querySelector('#st-snd').onchange=e=>setMute(!e.target.checked);
  b.querySelector('#st-rm').onchange=e=>{SV.reduced=e.target.checked;persist();applyReduced()};
  b.querySelector('#st-rx').onchange=e=>{SV.relaxed=e.target.checked;persist();$('#t-relaxed2').checked=SV.relaxed};
- b.querySelector('#st-usd').onchange=e=>{SV.usd=e.target.checked;persist();for(const k in SPR)delete SPR[k];if(M&&!M.ended&&curScreen==='s-market'){M.focusKey='';renderWallet(null,null)}};
+ b.querySelector('#st-usd').onchange=e=>{SV.usd=e.target.checked;persist();for(const k in SPR)delete SPR[k];if(M&&!M.ended&&curScreen==='s-market')renderWallet()};
  b.querySelector('#st-back').onclick=()=>{closeModal();if(fromPause)resume()};
  b.querySelector('#st-reset').onclick=()=>{if(confirm('Reset stars, scores, recipe cards and Mama\'s faces?')){SV=Object.assign(defSave(),{mute:SV.mute,reduced:SV.reduced,usd:SV.usd});persist();closeModal();goTitle()}};});}
 
@@ -965,16 +1078,17 @@ $('#b-play').onclick=()=>{ac();SV.seenIntro?goLevels():goIntro()};
 $('#b-book').onclick=book;$('#b-faces').onclick=faces;
 $('#b-skip').onclick=goLevels;$('#b-intro-go').onclick=goLevels;
 $('#b-lv-back').onclick=goTitle;$('#b-lv-intro').onclick=goIntro;
-$('#t-relaxed2').onchange=e=>{SV.relaxed=e.target.checked;persist()};
+$('#t-relaxed2').onchange=e=>{SV.relaxed=e.target.checked;persist();goLevels()};
 $('#b-mute').onclick=()=>setMute(!SV.mute);
 $('#b-menu').onclick=()=>{if(curScreen==='s-market'&&M&&!M.ended){if(!M.paused)pause()}else if(curScreen==='s-cook'&&CK&&!CK.done&&!CK.paused)cookPause();else settings(false)};
 
 /* read-only hook used by the automated browser test */
 window.FUFU={state:()=>({screen:curScreen,level:M&&M.n,basket:M?M.basket.map(b=>b.id):[],wallet:M?wTotal(M.wallet):0,ended:!!(M&&M.ended),t:M&&M.t,res:RES&&{react:RES.react,stars:RES.stars,score:RES.score,S:RES.S}}),
  tiles:()=>{if(!M)return[];const r=mcv.getBoundingClientRect(),out=[];for(const l of M.lanes)for(const t of l.tiles){const R=tileRect(l,t),cx=R.x+TW/2,cy=R.y+TH/2;
-  if(cx>l.x+20&&cx<l.x+l.w-20&&cy>l.y&&cy<l.y+l.h)out.push({id:t.id,gold:t.gold,exact:t.exact,x:r.left+cx*M.k,y:r.top+cy*M.k})}return out},
+  if(cx>l.x+20&&cx<l.x+l.w-20&&cy>l.y&&cy<l.y+l.h)out.push({id:t.id,gold:t.gold,sold:!!t.sold,lunch:lunchOn(l),x:r.left+cx*M.k,y:r.top+cy*M.k})}return out},
  nextBeat:()=>{if(!CK||CK.done)return null;const b=CK.beats.find(x=>x.j===null);return b?b.t-now():null},cook:()=>CK&&{round:CK.round,done:CK.done},info:()=>!!(M&&M.info),scale:()=>M?M.k:1,slow:()=>M&&M.slow,meter:()=>$('#verdict').textContent,combo:()=>$('#combo').textContent,mama:()=>$('#mtxt').textContent,coach:()=>$('#coach').classList.contains('on')?$('#coachtxt').textContent:'',
- evalBasket:(ids,S)=>{const keep=M;M={basket:ids.map(id=>({id})),S};const r=evaluate();M=keep;return {react:r.react,H:+r.H.toFixed(2),lines:r.lines,sub:r.sub,tip:r.tip}}};
+ ajm:()=>$('#ajm').classList.contains('on')?$('#ajmtxt').textContent+' | '+$('#ajmnote').textContent:'',svc:v=>{SVC_FORCE=v},water:()=>!$('#water').hidden,dyk:()=>$('#dyk').textContent,
+ evalBasket:(ids,S,water)=>{const keep=M;M={basket:ids.map(id=>({id})),S,water};const r=evaluate();M=keep;return {react:r.react,H:+r.H.toFixed(2),lines:r.lines,sub:r.sub,tip:r.tip}}};
 goTitle();
 })();
 </script>

@@ -14,12 +14,12 @@ Open `index.html` in any modern browser, on a phone or a computer. It's one file
 
 ## How to play
 
-1. **Shop.** Ingredient tiles slide past on market rows. Tap a tile to drop it in your basket. The basket holds **5**, and you can tap a basket slot to put something back for a refund.
-2. **Watch your wallet.** You pay in Korean won notes and coins. Sellers with an **EXACT** badge give no change, so you need the right coins. When an exact-change tile is on screen, the coins that would pay it light up blue in your wallet. If you can't pay exactly, the badge says **EXACT ✕**.
+1. **Shop.** Ingredient tiles slide past on market rows. The first time you tap an ingredient, its info card opens. After that, a tap drops it in your basket. The basket holds **5**, and you can tap a basket slot to put something back for a refund.
+2. **Watch your wallet.** You pay in Korean won notes and coins (with rough ~$ hints), and sellers give change. Some tiles are **품절 · SOLD OUT**, and in Level 3 the Dry Goods stall takes a **점심시간** (lunch break) now and then.
 3. **Gold ★ tiles** (puna yam, cassava, plantain, fufu flour) are the real thing. They're rare, pricey and quicker than the other tiles, and they carry a star badge so you don't have to rely on color.
 4. **Mama's texts are the clock:** baggage claim → taxi → "Five minutes, my child." → she's at the door. Tap **Go cook** when you're ready, or cook when she arrives.
-5. **Cook.** There are three rhythm rounds: **Pound** (tap), **Turn** (swipe or tap), and **Add water** (tap). Tap when the ring meets the circle. Steady beats give smooth fufu, and rushing gives lumps.
-6. **Taste test.** You get sentences, not stat bars. Your ingredients decide the *pull* (stretch) and the *taste*, and your cooking decides the *smoothness*.
+5. **Cook.** **Pound** (tap on the beat), **Add water** (choose a little at a time, or all at once), then **Turn** (tap on the beat). The timing is forgiving. The water choice and a steady beat make it smooth.
+6. **Taste test.** You get sentences, not stat bars. Your ingredients decide the *pull* (stretch) and the *taste*, and they matter most. Your technique and the ingredients' own texture decide the *smoothness*.
 7. **Serve Mama.** She has four reactions, and every one comes with a gentle, accurate tip:
    1. A long silence. "Ah. My child."
    2. "So-so."
@@ -28,17 +28,17 @@ Open `index.html` in any modern browser, on a phone or a computer. It's one file
 
 **Balance beats stacking gold.** Each duplicate counts for less (1, ½, ¼…), and a blend of two or three good starches earns a bonus. Real fufu is often a blend.
 
-### Levels (v1)
+### Levels (v1.3)
 
 | Level | What's new |
 |---|---|
 | 1 · First trip | Tutorial. One slow row and plenty of money. |
-| 2 · Tight budget | Two rows moving in opposite directions, ₩22,000, and exact-change sellers. |
-| 3 · Itaewon run | Adds a vertical row (the Itaewon African shop, the only place that sells garri and semolina). Rows are coded by **color and shape/pattern**: Produce is green with a leaf pattern and round tiles, Dry goods is blue with a grid pattern and square, dashed-edge tiles, and Itaewon is orange with stripes and notched corners. |
+| 2 · Tight budget | Two rows moving in opposite directions, ₩26,000 and 70 s, and some stalls sell out. Unlocks at 2 ⭐ on Level 1. |
+| 3 · Itaewon run | ₩20,000 and 55 s, a lunch break at Dry Goods, and unlocks at 2 ⭐ on Level 2. Adds a vertical row (the Itaewon African shop, the only place that sells garri and semolina). Rows are coded by **color and shape/pattern**: Produce is green with a leaf pattern and round tiles, Dry goods is blue with a grid pattern and square, dashed-edge tiles, and Itaewon is orange with stripes and notched corners. |
 
 ### Also in v1
 
-- 1 to 3 stars and a best score per level (score = Mama's happiness plus a small time bonus)
+- 1 to 3 stars and a best score per level (score = Mama's happiness plus a small *patience bonus*)
 - A **retry hook** that lists what you missed (the good ingredients that went by, and swap ideas)
 - A **shareable result card** drawn on a canvas, downloadable as a PNG
 - A **recipe book** of 17 ingredient fact cards, each unlocked by buying that ingredient
@@ -59,6 +59,21 @@ Open `index.html` in any modern browser, on a phone or a computer. It's one file
 | Decoys | tteok (pounded, but sets firm and chewy), regular potato |
 
 Tapioca starch *is* cassava starch, but on its own it's gummy ("Close, but too gluey"). Chik is called kudzu starch, not arrowroot.
+
+## What's new in v1.3
+
+Changes from an outside playtest, approved by Ivy.
+
+- **First tap = learn.** The first time you tap an ingredient (remembered across visits), its card opens with a big **Buy ₩X (~$Y)** button and a **Not now** button. After that, one tap buys it. Press and hold, or tap the ⓘ (now in the top-right corner, with a large invisible touch area), to read the card again.
+- **Simpler Level 1 tutorial**, one step at a time: tap to learn, then the meter, then Go cook. A one-time tip at 3 items reminds you that the basket holds 5 and you can Go cook anytime.
+- **Forgiving cooking, about technique.** Timing windows are much wider (Perfect within about 200 ms, Good within about 350 ms). A new **Add water** step asks you to choose: *a little at a time* (smooth) or *pour it all in* (soggy and lumpy), with a one-line reason. Rhythm only nudges the score; what you bought matters most. In Relaxed mode an **Auto-pound** button keeps the beat for you.
+- **Mama's patience bonus** replaces the time bonus: finishing with time to spare gives her a moment to sit down with tea.
+- **Faster to Mama's face.** Taste-test lines appear every quarter second (tap to show them all), and Serve shows Mama's reaction right away.
+- **Did you know?** The results show one fact about something you bought, preferring same-plant, different-name facts (ma and African yams are both *Dioscorea*; toran is taro, which Nigerians call cocoyam). It also goes on the share card.
+- **Words.** The title now says: *In Nigeria, 'fufu' can mean many things. Mama means the cassava kind. What does it mean in your house?* The tutorial and recipe book define **swallow** and mention **iyan** (pounded yam).
+- **The market ajumma.** A drawn stall owner greets you (어서오세요! Welcome!), comments on some choices in English with a little Korean, and sometimes gives **서비스** (service), a small cash-back freebie, with a note on this Korean market custom.
+- **No more exact change.** Sellers give change. Instead, some tiles are **품절 · SOLD OUT** (Levels 2 and 3), and in Level 3 the Dry Goods stall closes now and then for **점심시간** (lunch break).
+- **Balance.** Level 2: ₩26,000 and 70 s. Level 3: ₩20,000 and 55 s, plus three rows and the lunch break. A top-reaction basket still fits each budget (for example, Korean yam + potato starch + tapioca starch is ₩10,500). The next level unlocks at **2 ⭐**, with a clear "Get 2 ⭐ to unlock" message. Relaxed mode opens every level.
 
 ## What's new in v1.2
 
