@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fufu for Mama</title>
+<meta name="description" content="Your Nigerian mother is landing in Seoul and she eats fufu with every meal. Shop a Korean market, cook it right, and see her face. By Ivy Newton, The African Gourmet.">
+<meta name="theme-color" content="#7a2e12">
+<style>
+:root{--ink:#2b1a10;--cream:#fff7ea;--paper:#fffdf8;--brick:#7a2e12;--gold:#f5c518;--green:#2f7d4a;--muted:#6b5a4c;
+ --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji",sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#3b1d0e;color:var(--ink);font-family:var(--font)}
+body{display:flex;justify-content:center;overscroll-behavior:none}
+#app{position:relative;width:100%;max-width:480px;height:100%;min-height:100%;background:var(--cream);overflow:hidden;display:flex;flex-direction:column}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow-y:auto;padding:max(12px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom))}
+.screen.on{display:flex}
+h1,h2,h3{margin:.2em 0}
+button{font-family:inherit;font-size:1rem;font-weight:700;border:0;border-radius:14px;padding:13px 18px;min-height:48px;cursor:pointer;color:#fff;background:var(--brick);box-shadow:0 3px 0 #4a1a08;touch-action:manipulation}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 #4a1a08}
+button.alt{background:#fff;color:var(--brick);box-shadow:0 3px 0 #d9c3a8;border:2px solid #ead7bf}
+button.gold{background:var(--gold);color:#3b2600;box-shadow:0 3px 0 #b38b00}
+button.small{min-height:40px;padding:8px 12px;font-size:.9rem}
+button:disabled{opacity:.45}
+button:focus-visible,.slot:focus-visible{outline:3px solid #1e66f5;outline-offset:2px}
+.row{display:flex;gap:10px;align-items:center}
+.col{display:flex;flex-direction:column;gap:10px}
+.grow{flex:1}
+.center{text-align:center}
+.muted{color:var(--muted)}
+.card{background:var(--paper);border-radius:16px;padding:14px;box-shadow:0 2px 0 #ead7bf;border:1px solid #f0e2cf}
+#iconbar{position:absolute;top:max(8px,env(safe-area-inset-top));right:10px;z-index:30;display:flex;gap:6px}
+#iconbar button{width:42px;height:42px;min-height:42px;padding:0;border-radius:50%;font-size:1.15rem;background:rgba(255,255,255,.9);color:var(--ink);box-shadow:0 2px 0 rgba(0,0,0,.15)}
+#s-title{justify-content:center;gap:14px;background:radial-gradient(circle at 50% 25%,#ffe6b8,#f7c98a 60%,#e9a35c)}
+.logo{font-size:2.6rem;font-weight:900;line-height:1;color:var(--brick);letter-spacing:-.5px;text-shadow:0 2px 0 #fff3d6}
+.thesis{font-size:1.06rem;line-height:1.45;font-style:italic;background:rgba(255,255,255,.75);border-radius:14px;padding:12px 14px;border-left:5px solid var(--brick)}
+.credit{font-size:.85rem;color:#5a3b22}
+.pill{display:inline-block;background:#fff;border-radius:999px;padding:4px 10px;font-size:.8rem;font-weight:700;color:var(--brick);border:1px solid #ead7bf}
+.phone{background:#1f1f24;border-radius:28px;padding:12px;box-shadow:0 6px 0 #0006}
+.phone .scr{background:#eef1f5;border-radius:18px;min-height:340px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.phone .hdr{display:flex;align-items:center;gap:8px;font-weight:800;padding-bottom:6px;border-bottom:1px solid #d5dbe3}
+.msg{max-width:82%;padding:9px 12px;border-radius:16px;font-size:.98rem;line-height:1.3;animation:pop .25s ease-out both}
+.msg.in{background:#fff;align-self:flex-start;border-bottom-left-radius:4px;box-shadow:0 1px 0 #0001}
+.msg.out{background:#2f7d4a;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.reduced .msg,.reduced .bounce,.reduced .pulse,.reduced .sent{animation:none!important}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+.lvl{display:flex;gap:12px;align-items:center;text-align:left;width:100%;background:#fff;color:var(--ink);box-shadow:0 3px 0 #d9c3a8;border:2px solid #ead7bf}
+.lvl .num{width:46px;height:46px;border-radius:12px;background:var(--brick);color:#fff;display:grid;place-items:center;font-size:1.3rem;flex:none}
+.lvl small{display:block;font-weight:500;color:var(--muted)}
+.stars{color:var(--gold);letter-spacing:2px;font-size:1.1rem;text-shadow:0 1px 0 #8a6a00}
+.stars .off{color:#d8cbb8;text-shadow:none}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 4px;border-bottom:1px solid #f0e2cf}
+.toggle input{width:26px;height:26px;accent-color:var(--brick)}
+#s-market{padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(safe-area-inset-bottom));gap:6px;overflow:hidden;background:#f6e7cc}
+.mhead{display:flex;gap:8px;align-items:stretch;padding-right:96px}
+.bubble{flex:1;background:#fff;border-radius:14px;padding:6px 10px;display:flex;gap:8px;align-items:center;min-height:52px;box-shadow:0 2px 0 #e0caa8}
+.bubble .who{font-size:.72rem;font-weight:800;color:var(--green)}
+.bubble .txt{font-size:.92rem;line-height:1.2}
+.trip{display:flex;gap:4px;margin-top:3px}
+.trip i{flex:1;height:5px;border-radius:3px;background:#e7dccb}
+.trip i.on{background:var(--green)}
+.trip i.now{background:#e0a100}
+.wallet{display:flex;flex-wrap:wrap;gap:5px;align-items:center;font-size:.82rem;min-height:28px}
+.wallet .tot{font-weight:900;font-size:1rem;margin-right:4px}
+.chip{display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:8px;font-weight:800;border:2px solid transparent}
+.chip.note{background:#d7ecd9;color:#1d4d2a}
+.chip.coin{background:#f3e3b5;color:#5c4300;border-radius:999px}
+.chip.hl{border-color:#1e66f5;background:#dbe8ff;color:#0b3a9e}
+.chip .need{background:#1e66f5;color:#fff;border-radius:6px;padding:0 4px;font-size:.72rem}
+#mcv{width:100%;flex:1;min-height:180px;touch-action:none;border-radius:14px;display:block;background:#efd9b4}
+#toast{height:40px;overflow:hidden;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:.9rem;font-weight:700;text-align:center;color:#5a2a10}
+.basket{display:flex;gap:6px;align-items:center}
+.slots{display:flex;gap:5px;flex:1}
+.slot{flex:1;aspect-ratio:4/5;max-width:64px;border-radius:12px;background:#fff8ec;border:2px dashed #d6b98f;display:grid;place-items:center;padding:0;min-height:0;box-shadow:none;color:var(--muted);font-size:.7rem;overflow:hidden}
+.slot canvas{width:100%;height:100%}
+.slot.filled{border-style:solid;border-color:#b98a52}
+.bounce{animation:bnc .35s ease-out}
+@keyframes bnc{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:none}}
+.pulse{animation:pls 1s ease-in-out infinite}
+@keyframes pls{50%{transform:scale(1.07)}}
+#s-cook{background:#2a1a12;color:#fff;gap:8px}
+#ccv{width:100%;max-width:440px;align-self:center;flex:1;min-height:320px;max-height:640px;touch-action:none;border-radius:16px;background:#3a2418;display:block}
+.cookinfo{text-align:center;padding-right:96px;min-height:48px}
+.cookinfo b{font-size:1.2rem}
+#s-taste,#s-mom{gap:10px;background:linear-gradient(#fff3df,#ffe1b3)}
+.sent{font-size:1.15rem;line-height:1.35;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 2px 0 #ead7bf;animation:pop .3s ease-out both}
+.say{font-size:1.5rem;font-weight:900;text-align:center;min-height:2em;color:var(--brick)}
+.sub{text-align:center;font-size:1.02rem}
+.tip{background:#eaf6ee;border-left:5px solid var(--green);border-radius:12px;padding:10px 12px;font-size:.98rem;line-height:1.35}
+.tip:empty,.missed:empty,#resbox:empty{display:none}
+.missed{background:#fff;border-radius:12px;padding:10px 12px;font-size:.95rem;line-height:1.35}
+.missed li{margin:3px 0}
+canvas.face{display:block;margin:0 auto}
+#modal{position:absolute;inset:0;background:rgba(30,15,5,.55);z-index:50;display:none;align-items:center;justify-content:center;padding:14px}
+#modal.on{display:flex}
+#modal .box{background:var(--cream);border-radius:20px;max-height:92%;width:100%;overflow-y:auto;padding:16px;box-shadow:0 10px 30px #0006}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.rcard{background:#fff;border-radius:14px;padding:8px;border:1px solid #ead7bf;font-size:.82rem;line-height:1.3}
+.rcard canvas{width:100%;height:auto;display:block;border-radius:10px;margin:0 auto 4px}
+.rcard .tier{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.rcard.locked{opacity:.75}
+.share img{width:100%;border-radius:12px;border:1px solid #ead7bf}
+@media (max-width:380px){.chip{padding:2px 5px;font-size:.72rem}.wallet{gap:3px}.wallet .tot{font-size:.9rem}.bubble .txt{font-size:.85rem}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div id="app">
+ <div id="iconbar"><button id="b-mute" aria-label="Mute sound">🔊</button><button id="b-menu" aria-label="Menu and settings">⚙️</button></div>
+
+ <section id="s-title" class="screen on" aria-label="Title">
+  <div class="center"><span class="pill">A Korean market · A Nigerian mother · One pot</span></div>
+  <div class="center"><canvas id="titleface" class="face" width="180" height="180" aria-hidden="true"></canvas></div>
+  <div class="logo center">Fufu for Mama</div>
+  <div class="thesis">Every culture has a food that doesn't count as a meal without it. <b>What's your fufu?</b> Would you recognize it in someone else's kitchen?</div>
+  <button id="b-play" class="gold">Play</button>
+  <div class="row"><button id="b-book" class="alt grow">📖 Recipe book</button><button id="b-faces" class="alt grow">👩🏾 Mama's faces</button></div>
+  <p class="center muted" style="margin:0;font-size:.9rem">There's no failing. Mama's face is the score.</p>
+  <p class="center credit" style="margin:0">By Ivy Newton, The African Gourmet</p>
+ </section>
+
+ <section id="s-intro" class="screen" aria-label="Intro">
+  <div class="phone" style="margin-top:44px"><div class="scr" id="introscr" aria-live="polite">
+   <div class="hdr"><canvas id="introface" width="36" height="36" aria-hidden="true"></canvas> Mama ❤️</div>
+  </div></div>
+  <div class="row" style="margin-top:12px"><button id="b-skip" class="alt">Skip</button><button id="b-intro-go" class="grow">Run to the market!</button></div>
+ </section>
+
+ <section id="s-levels" class="screen" aria-label="Choose a level">
+  <h2>Choose your trip</h2>
+  <div id="levellist" class="col"></div>
+  <label class="toggle card" style="margin-top:10px"><span><b>Relaxed mode</b><br><small class="muted">No clock. Mama waits at the airport café.</small></span><input type="checkbox" id="t-relaxed2"></label>
+  <div class="row" style="margin-top:10px"><button id="b-lv-back" class="alt grow">Back</button><button id="b-lv-intro" class="alt grow">Replay intro</button></div>
+ </section>
+
+ <section id="s-market" class="screen" aria-label="Market">
+  <div class="mhead">
+   <div class="bubble"><canvas id="mface" width="36" height="36" aria-hidden="true"></canvas>
+    <div class="grow"><div class="who">Mama</div><div class="txt" id="mtxt" aria-live="polite"></div><div class="trip" id="trip"><i></i><i></i><i></i></div></div></div>
+  </div>
+  <div class="wallet" id="wallet" aria-label="Wallet"></div>
+  <canvas id="mcv" aria-label="Market stalls. Tap an ingredient to buy it."></canvas>
+  <div id="toast" aria-live="polite"></div>
+  <div class="basket"><div class="slots" id="slots"></div><button id="b-cook" class="small">Go cook 🍲</button></div>
+ </section>
+
+ <section id="s-cook" class="screen" aria-label="Cooking">
+  <div class="cookinfo"><b id="cround">Round 1 of 3</b><div id="chint" style="color:#f2d8b8">Tap when the ring meets the circle.</div></div>
+  <canvas id="ccv" aria-label="Cooking. Tap in rhythm."></canvas>
+  <p class="center" id="cookhelp" style="margin:0;color:#f2d8b8;font-size:.9rem">Tap when the white ring meets the gold circle. Steady beats make smooth fufu. Rushing makes lumps.</p>
+ </section>
+
+ <section id="s-taste" class="screen" aria-label="Taste test">
+  <h2 class="center" style="margin-top:44px">Taste test</h2>
+  <canvas id="tcv" width="300" height="190" class="face" aria-hidden="true"></canvas>
+  <div id="sents" class="col" aria-live="polite"></div>
+  <button id="b-serve" class="gold">Serve Mama →</button>
+ </section>
+
+ <section id="s-mom" class="screen" aria-label="Mama's reaction">
+  <canvas id="momface" class="face" width="220" height="220" aria-hidden="true" style="margin-top:30px"></canvas>
+  <div class="say" id="say" aria-live="polite"></div>
+  <div class="sub" id="saysub"></div>
+  <div class="tip" id="tip"></div>
+  <div class="card center" id="resbox"></div>
+  <div class="missed" id="missed"></div>
+  <div class="row"><button id="b-retry" class="alt grow">Try again</button><button id="b-next" class="grow">Next level</button></div>
+  <div class="row"><button id="b-share" class="gold grow">Share card</button><button id="b-home" class="alt grow">Menu</button></div>
+ </section>
+
+ <div id="modal" role="dialog" aria-modal="true"><div class="box" id="mbox"></div></div>
+ <div class="sr" id="live" aria-live="assertive"></div>
+</div>
+<script>
+'use strict';
+(function(){
+const $=s=>document.querySelector(s);
+const FONT='system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const won=n=>'₩'+n.toLocaleString('en-US');
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const DPR=()=>Math.min(window.devicePixelRatio||1,2.5);
+const now=()=>performance.now();
+
+/* ================= SAVE ================= */
+const KEY='fufuForMama.v1';
+function defSave(){let r=false;try{r=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
+ return {v:1,best:{},stars:{},recipes:{},faces:{},unlocked:1,seenIntro:false,mute:false,reduced:r,relaxed:false};}
+let SV; try{SV=Object.assign(defSave(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){SV=defSave()}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(SV))}catch(e){}}
+function applyReduced(){document.body.classList.toggle('reduced',!!SV.reduced)}
+applyReduced();
+
+/* ================= AUDIO (all synthesized with WebAudio) ================= */
+const AU={ctx:null,master:null,amb:null,ambTimer:null,white:null,brown:null};
+function ac(){
+ if(SV.mute) return null;
+ try{
+  if(!AU.ctx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;AU.ctx=new C();AU.master=AU.ctx.createGain();AU.master.gain.value=.7;AU.master.connect(AU.ctx.destination);}
+  if(AU.ctx.state==='suspended')AU.ctx.resume();
+ }catch(e){return null}
+ return AU.ctx;
+}
+function buf(kind){const c=AU.ctx;if(AU[kind])return AU[kind];const b=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=b.getChannelData(0);let last=0;
+ for(let i=0;i<d.length;i++){const w=Math.random()*2-1;if(kind==='white')d[i]=w;else{last=(last+.02*w)/1.02;d[i]=last*3.5}}return AU[kind]=b;}
+function tone(f,dur,o={}){const c=ac();if(!c)return;const t=c.currentTime+(o.delay||0),os=c.createOscillator(),g=c.createGain();
+ os.type=o.type||'sine';os.frequency.setValueAtTime(f,t);if(o.f2)os.frequency.exponentialRampToValueAtTime(o.f2,t+dur);
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(o.gain||.2,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ os.connect(g);g.connect(AU.master);os.start(t);os.stop(t+dur+.03);}
+function nz(dur,o={}){const c=ac();if(!c)return;const t=c.currentTime+(o.delay||0),s=c.createBufferSource();s.buffer=buf(o.kind||'white');
+ const f=c.createBiquadFilter();f.type=o.type||'lowpass';f.frequency.value=o.freq||800;f.Q.value=o.q||1;const g=c.createGain();
+ g.gain.setValueAtTime(o.gain||.2,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(f);f.connect(g);g.connect(AU.master);s.start(t,Math.random());s.stop(t+dur+.05);}
+const SFX={
+ clink(){tone(2637,.22,{type:'triangle',gain:.11});tone(3520,.3,{type:'triangle',gain:.08,delay:.05});},
+ bounce(){tone(260,.18,{f2:90,gain:.28,delay:.12});nz(.08,{freq:500,gain:.12,delay:.12,kind:'brown'});},
+ err(){tone(150,.16,{type:'square',gain:.05});},
+ ping(){tone(988,.12,{gain:.1});tone(1319,.2,{gain:.1,delay:.1});},
+ thud(){tone(120,.22,{f2:45,gain:.45});nz(.12,{freq:380,gain:.35,kind:'brown'});},
+ whoosh(){nz(.28,{type:'bandpass',freq:900,q:.8,gain:.18});},
+ splash(){nz(.3,{type:'highpass',freq:2200,gain:.1});tone(500,.12,{f2:1300,gain:.05});},
+ tick(){tone(1700,.03,{gain:.04,type:'square'});},
+ miss(){tone(220,.2,{f2:140,gain:.08,type:'triangle'});},
+ chime(){[523,659,784,1047].forEach((f,i)=>tone(f,.35,{gain:.1,delay:i*.11,type:'triangle'}));},
+ sad(){tone(392,.5,{gain:.07,f2:330,type:'triangle'});}
+};
+function ambStart(){const c=ac();if(!c||AU.amb)return;
+ const s=c.createBufferSource();s.buffer=buf('brown');s.loop=true;const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=650;const g=c.createGain();g.gain.value=.05;
+ s.connect(f);f.connect(g);g.connect(AU.master);s.start();AU.amb={s,g};
+ const blip=()=>{if(!AU.amb)return;const r=Math.random();
+  if(r<.7){nz(rnd(.08,.18),{type:'bandpass',freq:rnd(350,900),q:4,gain:.035});nz(rnd(.06,.14),{type:'bandpass',freq:rnd(350,900),q:4,gain:.03,delay:.15});}
+  else tone(rnd(1100,1700),.5,{gain:.012,type:'triangle'});
+  AU.ambTimer=setTimeout(blip,rnd(900,2600));};
+ AU.ambTimer=setTimeout(blip,800);}
+function ambStop(){if(AU.amb){try{AU.amb.s.stop()}catch(e){}AU.amb=null}clearTimeout(AU.ambTimer);}
+
+/* ================= DRAWING HELPERS ================= */
+const PC={};const P=d=>PC[d]||(PC[d]=new Path2D(d));
+function fp(c,d,fill,stroke,lw){const p=P(d);c.fillStyle=fill;c.fill(p);if(stroke){c.lineWidth=lw||2;c.strokeStyle=stroke;c.lineJoin='round';c.stroke(p)}}
+function sp(c,d,stroke,lw,dash){c.save();if(dash)c.setLineDash(dash);c.strokeStyle=stroke;c.lineWidth=lw||2;c.lineCap='round';c.stroke(P(d));c.restore()}
+function ln(c,arr,col,lw){c.strokeStyle=col;c.lineWidth=lw||1.5;c.lineCap='round';c.beginPath();for(const a of arr){c.moveTo(a[0],a[1]);c.lineTo(a[2],a[3])}c.stroke()}
+function dt(c,arr,col,r){c.fillStyle=col;for(const a of arr){c.beginPath();c.arc(a[0],a[1],a[2]||r,0,7);c.fill()}}
+function el(c,x,y,rx,ry,rot,fill,stroke,lw){c.beginPath();c.ellipse(x,y,rx,ry,rot||0,0,7);if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=lw||1.5;c.stroke()}}
+function rr(c,x,y,w,h,r){c.beginPath();if(r<=0){c.rect(x,y,w,h);return}c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function tx(c,s,x,y,size,col,w){c.fillStyle=col;c.font=`${w||800} ${size}px ${FONT}`;c.textAlign='center';c.textBaseline='middle';c.fillText(s,x,y)}
+function flesh(c,ring,fl,rw){dt(c,[[0,0]],ring,20);dt(c,[[0,0]],fl,20-(rw||3))}
+function heap(c,col,shade,gran){dt(c,[[0,0]],'#5b4636',20);el(c,0,8,17,6,0,'#3e2f24');
+ fp(c,'M-15 9 C-12 -4 -6 -12 0 -12 C6 -12 12 -4 15 9 Z',col,shade,1.2);
+ if(gran){c.fillStyle=gran;for(let i=0;i<22;i++){const a=i*2.4,r=(i%7)*1.5;c.beginPath();c.arc(Math.cos(a)*r,Math.sin(a)*r*.8,1,0,7);c.fill()}}
+ else dt(c,[[-5,-5,1.6],[3,-8,1.2]],'rgba(255,255,255,.9)');}
+function drawStar(c,x,y,r,fill,stroke,lw){c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r2=i%2?r*.45:r;c.lineTo(x+Math.cos(a)*r2,y+Math.sin(a)*r2)}c.closePath();c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=lw||1.5;c.stroke()}}
+/* ================= INGREDIENT ART (flat vector, drawn in code) =================
+   Each entry: w = whole item in a 100x100 box, c = cut-open view drawn in a circle of radius 20. */
+const ART={
+ puna:{w(c){fp(c,'M8 50 C8 30 28 22 50 24 C72 26 88 32 88 50 C88 68 70 76 50 76 C28 76 8 70 8 50Z','#6b4a2f','#3e2817',2);
+  ln(c,[[20,40,26,38],[34,58,40,56],[50,36,57,35],[62,60,70,58],[72,42,78,44],[28,66,34,65],[44,48,50,47]],'#3e2817',2);
+  ln(c,[[8,50,2,46],[88,50,95,54],[30,75,27,81],[66,75,70,81]],'#4a3120',1.5);},
+  c(c){flesh(c,'#6b4a2f','#fbf6e9',3.5);dt(c,[[-6,-4,1.2],[5,3,1.2],[-2,7,1],[7,-6,1],[0,0,1]],'#e3d5b4');}},
+ cassava:{w(c){fp(c,'M4 62 C18 44 48 32 94 24 C90 36 62 58 22 72 C12 75 5 70 4 62Z','#8a5a3c','#5e3a24',2);
+  ln(c,[[30,47,36,61],[50,39,56,53],[70,31,75,44]],'#5e3a24',2);ln(c,[[93,25,98,21]],'#5e3a24',3);},
+  c(c){flesh(c,'#5e3a24','#f0c2b0',2.5);dt(c,[[0,0]],'#fffdf6',15);dt(c,[[0,0]],'#e3d4b6',3);ln(c,[[0,-4,0,-12],[4,2,10,6],[-4,2,-10,6]],'#efe6d2',1);}},
+ plantain:{w(c){fp(c,'M8 30 C26 68 66 78 90 50 C93 52 94 55 92 58 C70 88 24 84 6 38 C5 34 6 31 8 30Z','#3f8f3a','#2c6a28',2);
+  sp(c,'M12 38 C30 72 66 80 90 54','#2c6a28',1.5);dt(c,[[8,31]],'#2a3d1c',3.5);ln(c,[[92,56,98,51]],'#2a3d1c',4.5);},
+  c(c){flesh(c,'#2f6d2b','#f1e3a6',3);dt(c,[[0,-3,1.4],[3,2,1.4],[-3,2,1.4]],'#b9a159');}},
+ fufu:{w(c){fp(c,'M64 26 L78 18 L78 74 L64 82Z','#b9700f','#8a520a',1.5);fp(c,'M16 26 L30 18 L78 18 L64 26Z','#f0a83c','#8a520a',1.5);
+  fp(c,'M16 26 L64 26 L64 82 L16 82Z','#e07b12','#8a520a',1.5);dt(c,[[40,54]],'#fff5e0',15);tx(c,'FUFU',40,54,9.5,'#9a4f05',900);},
+  c(c){heap(c,'#f8f4ea','#d8cfbd');}},
+ ma:{w(c){fp(c,'M8 80 C8 74 68 18 84 12 C92 10 94 18 88 24 C72 40 24 84 16 86 C11 87 8 84 8 80Z','#c9a77a','#8f7048',1.8);
+  ln(c,[[30,64,26,60],[44,51,41,46],[58,38,56,33],[72,27,76,23],[22,74,18,72],[50,48,54,52],[64,34,68,38],[36,60,40,64]],'#7d5f38',1.2);},
+  c(c){flesh(c,'#b8956a','#fffef7',2.5);sp(c,'M-11 -6 C-7 -12 0 -13 6 -11','rgba(160,190,230,.9)',2.5);el(c,4,5,6,3,.4,'rgba(200,220,245,.6)');}},
+ potstarch:{w(c){fp(c,'M22 86 L22 28 L70 28 L70 86Z','#3a6fd8','#24489a',2);fp(c,'M22 28 L22 17 L70 17 L70 28Z','#6b97ea','#24489a',2);
+  sp(c,'M22 17 L28 12 L34 17 L40 12 L46 17 L52 12 L58 17 L64 12 L70 17','#24489a',1.8);el(c,46,58,13,10,0,'#e7c98a','#9c7c46',1.5);dt(c,[[42,55,1.5],[50,60,1.5],[45,63,1.2]],'#8a6a3a');},
+  c(c){heap(c,'#ffffff','#cfdaee');}},
+ glutinous:{w(c){fp(c,'M20 86 L20 36 C20 22 32 16 46 16 C60 16 72 22 72 36 L72 86Z','#d9548f','#a8396c',2);c.fillStyle='#fff0f6';c.fillRect(21,46,50,20);
+  [[33,56,.5],[45,52,-.3],[57,57,.8],[40,61,-.6],[53,50,.2]].forEach(a=>el(c,a[0],a[1],4.5,2.4,a[2],'#ffffff','#d9548f',1));c.fillStyle='#a8396c';c.fillRect(38,11,16,7);},
+  c(c){heap(c,'#fff3f8','#e6c6d5');dt(c,[[-7,-2,1.3],[6,-4,1.3],[0,3,1]],'#ffffff');}},
+ sweetpot:{w(c){fp(c,'M6 56 C18 32 58 26 94 42 C74 72 34 82 6 56Z','#9b2f5a','#6f1f40',2);
+  ln(c,[[30,46,34,52],[52,40,56,46],[70,45,72,53],[40,64,44,68]],'#6f1f40',1.6);ln(c,[[6,56,1,59],[94,42,99,39]],'#6f1f40',1.6);},
+  c(c){flesh(c,'#7a2347','#f39a3b',3);dt(c,[[0,0]],'#f8b462',9);}},
+ tapioca:{w(c){rr(c,24,28,46,58,8);c.fillStyle='#12999a';c.fill();c.strokeStyle='#0b6f70';c.lineWidth=2;c.stroke();
+  el(c,47,28,23,7,0,'#0b6f70');el(c,47,25,23,7,0,'#2cc4ba','#0b6f70',1.5);c.fillStyle='#e9fbf9';c.fillRect(25,48,44,22);
+  [[34,59],[42,55],[50,61],[58,56],[46,65]].forEach(a=>{dt(c,[a],'#12999a',3.2);dt(c,[[a[0]-1,a[1]-1]],'#bff3ef',1)});},
+  c(c){heap(c,'#fbfbfb','#cfe9e7');}},
+ toran:{w(c){fp(c,'M42 20 C64 20 76 38 76 56 C76 74 62 84 44 84 C24 84 12 72 12 54 C12 36 24 20 42 20Z','#7d6b5d','#4f4136',2);
+  sp(c,'M16 44 C30 40 58 40 74 46','#a8968a',2);sp(c,'M13 60 C30 56 60 56 76 62','#a8968a',2);sp(c,'M20 75 C34 71 56 71 70 77','#a8968a',2);sp(c,'M42 20 C40 12 44 6 50 4','#6c8f3a',3.5);},
+  c(c){flesh(c,'#4f4136','#f4f1f6',2.5);c.fillStyle='#8e6aa8';for(let i=0;i<16;i++){const a=i*2.3,r=3+(i%5)*2.6;c.beginPath();c.arc(Math.cos(a)*r,Math.sin(a)*r,1.1,0,7);c.fill()}}},
+ kudzu:{w(c){fp(c,'M18 86 C12 62 18 42 30 32 L26 20 L68 20 L64 32 C76 42 82 62 76 86Z','#7a4fc0','#553490',2);
+  ln(c,[[24,50,70,50],[20,62,76,62],[18,74,78,74]],'#9473d0',1.2);sp(c,'M28 32 L66 32','#d8b878',4.5);
+  dt(c,[[47,52,7],[39,62,7],[55,62,7]],'#ece4f8');ln(c,[[47,62,47,76]],'#ece4f8',2);},
+  c(c){dt(c,[[0,0]],'#d9cdea',20);['M-12 -4 L-4 -10 L2 -3 L-6 3Z','M2 -9 L12 -6 L10 3 L3 1Z','M-9 5 L0 4 L4 12 L-6 13Z','M5 5 L13 6 L10 13Z'].forEach(d=>fp(c,d,'#fbfaf6','#b6a8cc',1));}},
+ wheat:{w(c){fp(c,'M12 86 C8 62 14 40 30 32 L26 18 L40 24 L47 14 L54 24 L68 18 L64 32 C80 40 86 62 82 86Z','#d9b44a','#9a7a22',2);
+  sp(c,'M30 32 L64 32','#7a5c14',3);ln(c,[[47,78,47,44]],'#7a5c14',2);
+  [[42,50],[52,50],[42,58],[52,58],[42,66],[52,66]].forEach((a,i)=>el(c,a[0],a[1],4,2.2,i%2?-.6:.6,'#fff3cf','#7a5c14',1));el(c,47,43,2.2,4,0,'#fff3cf','#7a5c14',1);},
+  c(c){heap(c,'#f3ead6','#d6c7a2');}},
+ semolina:{w(c){fp(c,'M22 86 C16 70 18 36 24 22 L70 22 C76 36 78 70 72 86Z','#f2c230','#b58f12',2);c.fillStyle='#b58f12';c.fillRect(23,22,47,6);tx(c,'SEMO',47,58,13,'#6e4f00',900);},
+  c(c){heap(c,'#f6d873','#c9a020','#c89a1e');}},
+ garri:{w(c){rr(c,14,24,68,60,10);c.fillStyle='#f4ead0';c.fill();c.strokeStyle='#b8a67c';c.lineWidth=2;c.stroke();
+  c.fillStyle='#dccb9c';for(let i=0;i<40;i++){c.beginPath();c.arc(18+(i*37)%60,28+(i*53)%52,1.2,0,7);c.fill()}
+  c.fillStyle='#c8312e';c.fillRect(15,44,66,18);tx(c,'GARRI',48,53.5,11,'#fff',900);sp(c,'M14 24 L20 20 L26 24 L32 20 L38 24 L44 20 L50 24 L56 20 L62 24 L68 20 L74 24 L82 21','#b8a67c',1.5);},
+  c(c){heap(c,'#f4ead0','#cbb98a','#b8a370');}},
+ bean:{w(c){fp(c,'M20 86 L24 22 L70 22 L74 86 C60 90 34 90 20 86Z','#a0522d','#6e3519',2);sp(c,'M25 31 L69 31','#f0d9b5',2,[4,3]);
+  [[37,55,.4],[55,52,-.3],[46,69,.1]].forEach(a=>{el(c,a[0],a[1],7,5,a[2],'#f4e8cf','#6e3519',1);dt(c,[[a[0]+1,a[1]]],'#1d1d1d',2)});},
+  c(c){heap(c,'#e8d3ae','#c2a578');}},
+ tteok:{w(c){[[10,30],[18,48],[8,66]].forEach(a=>{rr(c,a[0],a[1],74,14,7);c.fillStyle='#fbfaf6';c.fill();c.strokeStyle='#bdb5a6';c.lineWidth=1.8;c.stroke();
+  ln(c,[[a[0]+24,a[1]+3,a[0]+24,a[1]+11],[a[0]+48,a[1]+3,a[0]+48,a[1]+11]],'#d8d1c4',1.2)});},
+  c(c){flesh(c,'#d9d2c5','#ffffff',2.5);sp(c,'M-10 -6 C-6 -11 0 -12 5 -10','#e8e3ff',2.5);}},
+ potato:{w(c){fp(c,'M14 50 C14 30 40 22 58 26 C80 30 88 44 84 60 C80 76 56 82 38 78 C20 74 14 64 14 50Z','#c8a46a','#8f6f3c',2);
+  dt(c,[[32,40,1.8],[56,36,1.8],[70,54,1.8],[44,62,1.8],[26,58,1.6],[60,68,1.6]],'#7d5f30');},
+  c(c){flesh(c,'#a8844a','#f7e9a8',2.5);}}
+};
+/* pull 0-3 = stretch; taste 0-3 = closeness to fufu's flavour; flesh = colour it adds to the dough */
+const ING={
+ puna:{name:'Puna yam',ko:'',label:['PUNA YAM'],tier:'gold',price:12000,hue:'#5b3a1e',flesh:'#f6efdd',pull:3,taste:3,
+  fact:'Puna is a white yam popular in West Africa. Boiled and pounded, white yam becomes pounded yam, called iyan in Yoruba.',why:'pounded, white yam becomes iyan.'},
+ cassava:{name:'Cassava',ko:'카사바',label:['CASSAVA'],tier:'gold',price:9000,hue:'#c0652a',flesh:'#f3eedf',pull:3,taste:3,
+  fact:'Cassava is a starchy root. In much of Nigeria, fufu means cassava soaked until it ferments, which gives a gentle sour taste. Cassava must be properly peeled and soaked or cooked before eating.',why:'the root most Nigerian fufu is made from.'},
+ plantain:{name:'Plantain',ko:'',label:['PLANTAIN'],tier:'gold',price:7500,hue:'#3a8a34',flesh:'#efe2b8',pull:2,taste:2,
+  fact:'Green (unripe) plantain is boiled and pounded, or dried and milled into flour, to make a swallow. Ripe plantain is too sweet for it.',why:'green plantain makes a firm, earthy swallow.'},
+ fufu:{name:'Fufu flour',ko:'',label:['FUFU','FLOUR'],tier:'gold',price:10000,hue:'#e07b12',flesh:'#f4efe2',pull:3,taste:3,
+  fact:'Packaged fufu flour is a shortcut many cooks abroad rely on. Read the bag: it may be made from cassava, plantain, yam, or a mix.',why:'a shortcut many cooks abroad use.'},
+ ma:{name:'Korean yam (ma)',ko:'마',label:['KOREAN YAM','(MA)'],tier:'good',price:5000,hue:'#3f8f6e',flesh:'#fbf8ee',pull:2.5,taste:2.5,
+  fact:'Ma (마) is a Korean yam, a cousin of African yams in the same Dioscorea family. Raw it is slippery; cooked and mashed it is soft and a little sticky.',why:'a true yam, a cousin of the African ones.'},
+ potstarch:{name:'Potato starch',ko:'감자전분',label:['POTATO','STARCH'],tier:'good',price:2500,hue:'#3a6fd8',flesh:'#ffffff',pull:2.5,taste:1.5,
+  fact:'Potato starch (감자전분) is pure starch. Abroad, many cooks make fufu from potato flakes mixed with potato starch. The starch gives the stretch.',why:'starch gives the stretch.'},
+ glutinous:{name:'Glutinous rice flour',ko:'찹쌀가루',label:['GLUTINOUS','RICE FLOUR'],tier:'good',price:3000,hue:'#d9548f',flesh:'#fbf7f2',pull:3,taste:1,
+  fact:'Glutinous rice flour (찹쌀가루) makes chewy Korean rice cakes. It has no gluten; "glutinous" just means sticky.',why:'lots of stretch; blend it, don\'t use it alone.'},
+ sweetpot:{name:'Sweet potato',ko:'고구마',label:['SWEET','POTATO'],tier:'good',price:3500,hue:'#8e2350',flesh:'#f6b867',pull:1,taste:1,
+  fact:'Korean sweet potato (고구마) is sweet and soft, and wonderful roasted in winter. In swallow, a little goes a long way.',why:'soft, but sweet.'},
+ tapioca:{name:'Tapioca starch',ko:'타피오카 전분',label:['TAPIOCA','STARCH'],tier:'good',price:3000,hue:'#12999a',flesh:'#ffffff',pull:3,taste:2,
+  fact:'Tapioca starch IS cassava, but only the starch, without the rest of the root. On its own it turns gummy. Mixed with something that has body, it helps.',why:'cassava starch; great in a blend.'},
+ toran:{name:'Korean taro (toran)',ko:'토란',label:['KOREAN TARO','(TORAN)'],tier:'good',price:4000,hue:'#56707e',flesh:'#f3eff4',pull:2,taste:2,
+  fact:'Toran (토란) is taro. In Nigeria, taro is one of the plants called cocoyam, and cocoyam paste thickens soups like oha soup.',why:'Nigerians know it as a kind of cocoyam.'},
+ kudzu:{name:'Kudzu starch (chik)',ko:'칡전분',label:['KUDZU','STARCH (CHIK)'],tier:'good',price:6000,hue:'#7a4fc0',flesh:'#f6f4f9',pull:2,taste:1,
+  fact:'Chik (칡) is kudzu. Its root gives a starch used in East Asia to make jellies and thicken sauces. It sets clear and wobbly.',why:'smooth starch, but jelly-like alone.'},
+ wheat:{name:'Wheat flour',ko:'밀가루',label:['WHEAT','FLOUR'],tier:'diff',price:2000,hue:'#a8822a',flesh:'#efe3c6',pull:2,taste:2,
+  fact:'Wheat meal is a real Nigerian swallow, made by stirring wheat flour into hot water. Not fufu, but eaten with the same soups.',why:'makes wheat meal, a different swallow.'},
+ semolina:{name:'Semolina',ko:'',label:['SEMOLINA'],tier:'diff',price:4500,hue:'#e2b512',flesh:'#f5e3a0',pull:2,taste:2,
+  fact:'Semo, made from semolina, is a popular swallow in Nigeria, stirred into hot water until smooth.',why:'makes semo, a different swallow.'},
+ garri:{name:'Garri',ko:'',label:['GARRI'],tier:'diff',price:5500,hue:'#c8312e',flesh:'#f1e6c8',pull:1,taste:2,
+  fact:'Garri is cassava that has been grated, fermented and roasted into granules. Stir it into hot water and you get eba.',why:'makes eba, a different swallow.'},
+ bean:{name:'Bean flour',ko:'',label:['BEAN','FLOUR'],tier:'wrong',price:3500,hue:'#9a4e2a',flesh:'#e2c79c',pull:0,taste:0,
+  fact:'Bean flour (often from peeled black-eyed peas) is for moin moin and akara. Wonderful food, just not a swallow.',why:'that\'s for moin moin.'},
+ tteok:{name:'Tteok (rice cake)',ko:'떡',label:['TTEOK','(RICE CAKE)'],tier:'decoy',price:4000,hue:'#8f84c4',flesh:'#ffffff',pull:2,taste:1,
+  fact:'Tteok (떡) is Korean rice cake. Some kinds are made by pounding steamed rice, a bit like fufu is pounded, but it sets firm and chewy.',why:'pounded too, but it sets firm.'},
+ potato:{name:'Potato',ko:'감자',label:['POTATO'],tier:'decoy',price:1500,hue:'#b48a4a',flesh:'#f6eab4',pull:1,taste:1,
+  fact:'Plain mashed potato is soft but doesn\'t really pull. That\'s why cooks abroad add potato starch.',why:'soft, but it won\'t pull.'}
+};
+const ORDER=['puna','cassava','plantain','fufu','ma','potstarch','glutinous','sweetpot','tapioca','toran','kudzu','wheat','semolina','garri','bean','tteok','potato'];
+const TIERNAME={gold:'Best · gold ★',good:'Good stand-in',diff:'Different swallow',wrong:'Wrong category',decoy:'Decoy'};
+const TIERCOL={gold:'#9a7400',good:'#2f7d4a',diff:'#1e5fa8',wrong:'#a23b2a',decoy:'#6b5a4c'};
+
+/* ================= TILE SPRITES ================= */
+const TW=96,TH=120,ARTH=76;
+const FRAMES={none:{bg:'#fffaf0',r:12},produce:{bg:'#eaf6e3',r:22,bd:'#2f7d3a'},dry:{bg:'#e8effc',r:3,bd:'#2f5fb8',dash:[6,4]},itaewon:{bg:'#fdeedd',r:0,bd:'#c75a12',cham:13}};
+function framePath(c,f,x,y,w,h){const F=FRAMES[f];if(F.cham){const k=F.cham;c.beginPath();c.moveTo(x+k,y);c.lineTo(x+w-k,y);c.lineTo(x+w,y+k);c.lineTo(x+w,y+h-k);c.lineTo(x+w-k,y+h);c.lineTo(x+k,y+h);c.lineTo(x,y+h-k);c.lineTo(x,y+k);c.closePath()}else rr(c,x,y,w,h,F.r)}
+function framePattern(c,f,w,h){c.save();if(f==='produce'){for(let i=0;i<14;i++)el(c,(i*29)%w,(i*47)%h,5,2.5,i,'#cfe7c2')}
+ else if(f==='dry'){c.strokeStyle='#d0dcf2';c.lineWidth=1;c.beginPath();for(let x=0;x<w;x+=10){c.moveTo(x,0);c.lineTo(x,h)}for(let y=0;y<h;y+=10){c.moveTo(0,y);c.lineTo(w,y)}c.stroke()}
+ else if(f==='itaewon'){c.strokeStyle='#f5d3ae';c.lineWidth=4;c.beginPath();for(let x=-h;x<w;x+=12){c.moveTo(x,h);c.lineTo(x+h,0)}c.stroke()}c.restore()}
+function drawArt(c,id,x,y,s){c.save();c.translate(x,y);c.scale(s/100,s/100);const A=ART[id];A.w(c);
+ c.save();c.translate(74,70);c.beginPath();c.arc(0,0,20,0,7);c.clip();A.c(c);c.restore();
+ c.beginPath();c.arc(74,70,21,0,7);c.strokeStyle='#fff';c.lineWidth=3.5;c.stroke();c.beginPath();c.arc(74,70,23,0,7);c.strokeStyle='rgba(0,0,0,.35)';c.lineWidth=1;c.stroke();c.restore();}
+function drawTile(c,id,f){const I=ING[id],F=FRAMES[f];c.save();framePath(c,f,0,0,TW,TH);c.fillStyle=F.bg;c.fill();c.save();c.clip();framePattern(c,f,TW,TH);
+ drawArt(c,id,(TW-ARTH)/2,1,ARTH);c.fillStyle=I.hue;c.fillRect(0,ARTH,TW,TH-ARTH);
+ const lines=I.label;let fs=10.5;c.font=`900 ${fs}px ${FONT}`;while(fs>7.5&&Math.max(...lines.map(l=>c.measureText(l).width))>TW-8){fs-=.5;c.font=`900 ${fs}px ${FONT}`}
+ if(lines.length===1)tx(c,lines[0],TW/2,ARTH+14,fs,'#fff',900);else{tx(c,lines[0],TW/2,ARTH+9,fs,'#fff',900);tx(c,lines[1],TW/2,ARTH+20,fs,'#fff',900)}
+ tx(c,won(I.price),TW/2,ARTH+34,11.5,'#fff',800);c.restore();
+ framePath(c,f,1,1,TW-2,TH-2);if(F.dash)c.setLineDash(F.dash);c.lineWidth=I.tier==='gold'?4:2.5;c.strokeStyle=I.tier==='gold'?'#e0a800':(F.bd||I.hue);c.stroke();c.setLineDash([]);
+ if(I.tier==='gold'){dt(c,[[15,15]],'#1f1500',12);drawStar(c,15,15,9.5,'#ffd23f','#fff',1)}c.restore();}
+const SPR={};
+function sprite(id,f,sc){const d=DPR()*(sc||1),k=id+'|'+f+'|'+d;if(SPR[k])return SPR[k];const cv=document.createElement('canvas');cv.width=Math.ceil((TW+8)*d);cv.height=Math.ceil((TH+8)*d);
+ const c=cv.getContext('2d');c.scale(d,d);c.translate(4,4);drawTile(c,id,f);return SPR[k]=cv;}
+function tileCanvas(id,locked,w){const cv=document.createElement('canvas'),d=DPR();cv.width=TW*d;cv.height=TH*d;if(w)cv.style.width=w+'px';const c=cv.getContext('2d');c.scale(d,d);drawTile(c,id,'none');
+ if(locked){c.globalCompositeOperation='source-atop';c.fillStyle='#cdbfae';c.fillRect(0,0,TW,TH);c.globalCompositeOperation='source-over';tx(c,'?',TW/2,TH/2,40,'#fff',900)}return cv;}
+
+/* ================= MAMA (drawn in code) ================= */
+function drawMom(c,cx,cy,r,mood){c.save();c.translate(cx,cy);const s=r/100;c.scale(s,s);
+ c.beginPath();c.ellipse(0,118,92,48,0,Math.PI,0);c.lineTo(92,140);c.lineTo(-92,140);c.closePath();c.fillStyle='#1f7a5a';c.fill();
+ c.save();c.clip();c.fillStyle='#f2b632';for(let i=-4;i<=4;i++)for(let j=0;j<3;j++){c.beginPath();c.arc(i*22+(j%2)*11,82+j*18,5,0,7);c.fill()}c.restore();
+ c.fillStyle='#5e3520';c.fillRect(-16,52,32,30);
+ el(c,0,10,58,68,0,'#6b3e26');el(c,-58,14,9,14,0,'#6b3e26');el(c,58,14,9,14,0,'#6b3e26');
+ dt(c,[[-60,32,6],[60,32,6]],'#f2b632');
+ fp(c,'M-78 -26 C-90 -70 -40 -104 0 -98 C46 -104 96 -76 80 -26 C60 -44 -56 -46 -78 -26Z','#c2185b','#8e0f42',3);
+ sp(c,'M-66 -40 C-40 -70 30 -76 70 -42','#f2b632',4);sp(c,'M-54 -60 C-20 -86 30 -88 60 -64','#f2b632',3);
+ fp(c,'M58 -60 C86 -86 106 -56 88 -34 C80 -46 70 -52 58 -60Z','#e0337a','#8e0f42',3);
+ const eye='#1c0f08';c.lineCap='round';
+ if(mood===1){sp(c,'M-34 2 C-28 7 -20 7 -14 2','#1c0f08',4.5);sp(c,'M14 2 C20 7 28 7 34 2','#1c0f08',4.5);sp(c,'M-36 -12 L-14 -19','#2a170c',5);sp(c,'M14 -19 L36 -12','#2a170c',5);sp(c,'M-12 46 C-4 43 4 43 12 46','#3a1a0e',5);}
+ else if(mood===2){dt(c,[[-24,4,6],[24,4,6]],eye);sp(c,'M-36 -14 L-12 -12','#2a170c',5);sp(c,'M12 -20 C22 -26 30 -24 36 -18','#2a170c',5);sp(c,'M-16 44 C-8 40 0 48 8 42 C12 40 16 42 18 44','#3a1a0e',5);}
+ else if(mood===3){dt(c,[[-24,4,6.5],[24,4,6.5]],eye);dt(c,[[-22,2,2],[26,2,2]],'#fff');sp(c,'M-36 -16 C-28 -22 -18 -22 -12 -18','#2a170c',5);sp(c,'M12 -18 C18 -22 28 -22 36 -16','#2a170c',5);
+  sp(c,'M-20 38 C-10 50 10 50 20 38','#3a1a0e',5);el(c,-36,22,9,5,0,'rgba(230,90,90,.35)');el(c,36,22,9,5,0,'rgba(230,90,90,.35)');}
+ else if(mood===4){sp(c,'M-34 6 C-28 -4 -20 -4 -14 6','#1c0f08',5);sp(c,'M14 6 C20 -4 28 -4 34 6','#1c0f08',5);fp(c,'M-26 32 C-16 58 16 58 26 32 Z','#fff','#3a1a0e',4);
+  el(c,-38,22,10,6,0,'rgba(230,90,90,.4)');el(c,38,22,10,6,0,'rgba(230,90,90,.4)');drawStar(c,82,-90,18,'#ffd23f','#9a7400',2);}
+ else{dt(c,[[-24,4,6],[24,4,6]],eye);sp(c,'M-16 40 C-6 46 6 46 16 40','#3a1a0e',5);}
+ c.restore();}
+function faceCanvas(cv,mood){const d=DPR();if(!cv._w){cv._w=cv.width;cv._h=cv.height;cv.style.width=cv._w+'px';cv.style.height=cv._h+'px';cv.width=cv._w*d;cv.height=cv._h*d;cv._d=d}
+ const w=cv._w,h=cv._h,c=cv.getContext('2d');c.setTransform(cv._d,0,0,cv._d,0,0);c.clearRect(0,0,w,h);drawMom(c,w/2,h*.56,Math.min(w,h)*.42,mood);}
+/* ================= LEVELS ================= */
+const LEVELS={
+ 1:{title:'First trip',sub:'Tutorial · one slow row · grab what you like',time:90,beat:900,wallet:{10000:4,5000:2,1000:8,500:4},exact:0,goldGap:7,
+  lanes:[{dir:'right',T:6.5,frame:'none',name:'NEIGHBORHOOD MARKET',pool:{ma:3,sweetpot:3,potato:3,potstarch:3,glutinous:2,wheat:2,tteok:2,puna:.7,cassava:.7}}],
+  texts:['Just landed! At baggage claim 😊','In the taxi. Remember, fufu must PULL when you tear it.','Five minutes, my child.','Taxi is outside your building!'],
+  card:'Tap any tile to drop it in your basket. Your basket holds 5, and you can tap a basket slot to put something back. Gold tiles with a ★ are the real thing: rare, pricey and quick. Tap <b>Go cook</b> when you\'re ready.'},
+ 2:{title:'Tight budget',sub:'Two rows, opposite ways · exact-change sellers',time:60,beat:820,wallet:{10000:1,5000:1,1000:5,500:4},exact:.3,goldGap:8,
+  lanes:[{dir:'right',T:3.4,frame:'none',name:'PRODUCE & SNACKS',pool:{ma:3,sweetpot:3,potato:3,toran:3,tteok:2,tapioca:2,cassava:.6,plantain:.6}},
+         {dir:'left',T:3.4,frame:'none',name:'FLOUR & STARCH',pool:{potstarch:3,glutinous:3,tapioca:2,kudzu:2,wheat:2,bean:2,puna:.6}}],
+  texts:['Landed again 😄 At baggage claim.','In the taxi. Watch your money, my child.','Five minutes. Is the water boiling?','I\'m at your door!'],
+  card:'Two rows now, moving opposite ways, and only ₩22,000 to spend. Sellers with an <b>EXACT</b> badge give no change: you need the right coins, and those coins light up blue in your wallet.'},
+ 3:{title:'Itaewon run',sub:'Adds a vertical row · stalls are color + shape coded',time:75,beat:780,wallet:{10000:2,5000:1,1000:3,500:4},exact:.3,goldGap:8,coded:true,
+  lanes:[{dir:'right',T:3.3,frame:'produce',name:'PRODUCE',pool:{ma:3,sweetpot:3,potato:3,toran:3,cassava:.6}},
+         {dir:'left',T:3.3,frame:'dry',name:'DRY GOODS',pool:{potstarch:3,glutinous:2,tapioca:2,kudzu:2,wheat:2,bean:2,tteok:2}},
+         {dir:'down',T:3.5,frame:'itaewon',name:'ITAEWON AFRICAN SHOP',pool:{garri:3,semolina:3,plantain:.9,puna:.9,fufu:.9}}],
+  texts:['At baggage claim. Did you find the African shop in Itaewon?','In the taxi. Garri is not fufu, you know 😉','Five minutes, my child.','Taxi is outside!'],
+  card:'Rows are coded by stall, by color <i>and</i> shape:<br>🟩 <b>PRODUCE</b>: green, leaf pattern, round tiles.<br>🟦 <b>DRY GOODS</b>: blue, grid pattern, square tiles with dashed edges.<br>🟧 <b>ITAEWON AFRICAN SHOP</b>: orange, stripes, notched corners, coming down the side.'}
+};
+const GOLDF=1.28;
+
+/* ================= UI HELPERS ================= */
+let curScreen='s-title';
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));curScreen=id;$('#'+id).scrollTop=0;}
+function modal(html,onMount){$('#mbox').innerHTML=html;$('#modal').classList.add('on');if(onMount)onMount($('#mbox'));$('#mbox').scrollTop=0;const b=$('#mbox').querySelector('button');if(b)b.focus({preventScroll:true});}
+function closeModal(){$('#modal').classList.remove('on');$('#mbox').innerHTML='';}
+function starsHTML(n){let s='';for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="off">★</span>';return `<span class="stars" role="img" aria-label="${n} of 3 stars">${s}</span>`}
+function say(t){$('#live').textContent=t}
+let toastT=0;function toast(t,ms){const e=$('#toast');e.textContent=t;clearTimeout(toastT);toastT=setTimeout(()=>{e.textContent=''},ms||2200)}
+function updMute(){$('#b-mute').textContent=SV.mute?'🔇':'🔊';$('#b-mute').setAttribute('aria-label',SV.mute?'Unmute sound':'Mute sound')}
+updMute();
+
+/* ================= TITLE / INTRO / LEVELS ================= */
+function goTitle(){stopAll();show('s-title');faceCanvas($('#titleface'),3);}
+let introTimers=[];
+function goIntro(){stopAll();show('s-intro');const scr=$('#introscr');scr.querySelectorAll('.msg').forEach(m=>m.remove());faceCanvas($('#introface'),0);
+ const msgs=[['in','My child! Boarding my connection to Seoul now ✈️'],['in','You know I eat swallow with every meal. No exceptions 😊'],['in','So… is the fufu ready?'],['out','Yes Mama! 😅'],['out','(It is not ready. There is no fufu.)'],['in','Good! I land soon. Love you.'],['out','Market. NOW. 🏃🏾']];
+ msgs.forEach((m,i)=>introTimers.push(setTimeout(()=>{const d=document.createElement('div');d.className='msg '+m[0];d.textContent=m[1];scr.appendChild(d);if(m[0]==='in')SFX.ping()},SV.reduced?0:300+i*900)));
+ SV.seenIntro=true;persist();}
+function goLevels(){stopAll();show('s-levels');const L=$('#levellist');L.innerHTML='';
+ for(let n=1;n<=3;n++){const lv=LEVELS[n],lock=n>SV.unlocked,b=document.createElement('button');b.className='lvl';b.disabled=lock;
+  b.innerHTML=`<span class="num">${lock?'🔒':n}</span><span class="grow"><b>Level ${n} · ${lv.title}</b><small>${lv.sub}</small><small>${starsHTML(SV.stars[n]||0)} &nbsp;Best: ${SV.best[n]||'–'}</small></span>`;
+  b.onclick=()=>levelCard(n);L.appendChild(b);}
+ $('#t-relaxed2').checked=!!SV.relaxed;}
+function levelCard(n){const lv=LEVELS[n];
+ modal(`<h2>Level ${n} · ${lv.title}</h2><p>${lv.card}</p>${SV.relaxed?'<p class="pill">Relaxed mode: no clock</p>':'<p class="muted">Mama\'s texts are your clock. When she arrives, you cook.</p>'}
+ <div class="row"><button class="alt grow" id="mc-x">Back</button><button class="gold grow" id="mc-go">Start</button></div>`,b=>{b.querySelector('#mc-x').onclick=closeModal;b.querySelector('#mc-go').onclick=()=>{closeModal();startLevel(n)}});}
+
+/* ================= WALLET MATH (Korean won notes and coins) ================= */
+const DEN=[10000,5000,1000,500];
+const wTotal=w=>DEN.reduce((s,d)=>s+d*(w[d]||0),0);
+function findPay(w,price,exact){let best=null;
+ for(let a=0;a<=(w[10000]||0);a++)for(let b=0;b<=(w[5000]||0);b++)for(let c=0;c<=(w[1000]||0);c++)for(let d=0;d<=(w[500]||0);d++){
+  const s=a*10000+b*5000+c*1000+d*500;if(exact?s!==price:s<price)continue;const sc=(s-price)*10+(a+b+c+d);if(!best||sc<best.sc)best={sc,s,use:{10000:a,5000:b,1000:c,500:d}};}
+ return best;}
+function addMoney(w,amt){for(const d of DEN){while(amt>=d){w[d]=(w[d]||0)+1;amt-=d}}}
+
+/* ================= MARKET ================= */
+let M=null,raf=0;
+const mcv=$('#mcv'),mctx=mcv.getContext('2d');
+function startLevel(n){stopAll();const L=LEVELS[n];
+ M={n,L,relaxed:!!SV.relaxed,wallet:Object.assign({},L.wallet),basket:[],t:0,dur:L.time,lanes:[],seen:{},goldT:-99,goldN:0,stage:-1,ended:false,paused:false,flyers:[],last:0,focusKey:'',uid:0};
+ show('s-market');faceCanvas($('#mface'),0);renderBasket();
+ requestAnimationFrame(()=>{if(!M||M.n!==n)return;layoutMarket(true);renderWallet();setStage(0);
+  toast(n===1?'Tap any tile to buy it. Your basket holds 5.':n===2?'Watch for EXACT badges: the right coins light up blue.':'Find the Itaewon African shop coming down the side.',4500);
+  ambStart();M.last=now();loop();});}
+function layoutMarket(fill){if(!M)return;const r=mcv.getBoundingClientRect(),d=DPR();const W0=Math.max(200,r.width),H0=Math.max(160,r.height);const LH=TH+24,cfg=M.L.lanes;
+ mcv.width=Math.round(W0*d);mcv.height=Math.round(H0*d);
+ const needH=cfg.length===1?LH:2*LH+18,minW=cfg.length===3?390:300;const k=clamp(Math.min(H0/(needH*1.15),W0/minW),1,1.35);M.k=k;const W=W0/k,H=H0/k;M.W=W;M.H=H;const old=M.lanes;M.lanes=[];
+ const mk=(i,x,y,w,h,axis)=>{const c=cfg[i],o=old[i]||{tiles:[],next:null,gap:30};const size=axis==='x'?TW:TH,len=axis==='x'?w:h;
+  const T=c.T*(M.relaxed?1.2:1),v=(len+size)/T;M.lanes.push({cfg:c,x,y,w,h,axis,dir:c.dir,len,size,v,tiles:o.tiles,next:o.next,gap:o.gap});};
+ if(cfg.length===1)mk(0,0,(H-LH)/2,W,LH,'x');
+ else if(cfg.length===2){const g=Math.max(6,(H-2*LH)/3);mk(0,0,g,W,LH,'x');mk(1,0,g*2+LH,W,LH,'x');}
+ else{const VW=TW+14,hw=W-VW-6,g=Math.max(6,(H-2*LH)/3);mk(0,0,g,hw,LH,'x');mk(1,0,g*2+LH,hw,LH,'x');mk(2,W-VW,0,VW,H,'y');}
+ for(const l of M.lanes)for(const t of l.tiles)t.v=l.v*(t.gold?GOLDF:1);
+ if(fill)for(const l of M.lanes){let p=l.len*.9;const arr=[];while(p>l.size*.3){arr.push(p);p-=l.size+rnd(18,50)}arr.reverse().forEach(q=>spawn(l,pick(l,true),q));}}
+function pick(l,noGold){const pool=l.cfg.pool;let ids=Object.keys(pool);const goldOK=!noGold&&(M.t-M.goldT)>=M.L.goldGap;
+ if(!goldOK)ids=ids.filter(i=>ING[i].tier!=='gold');
+ const golds=ids.filter(i=>ING[i].tier==='gold');
+ if(goldOK&&M.goldN===0&&M.t>10&&golds.length){M.goldT=M.t;return golds[Math.floor(Math.random()*golds.length)]}
+ const tot=ids.reduce((s,i)=>s+pool[i],0);let r=Math.random()*tot;for(const i of ids){r-=pool[i];if(r<=0){if(ING[i].tier==='gold')M.goldT=M.t;return i}}return ids[0];}
+function spawn(l,id,p){const g=ING[id].tier==='gold';const ex=Math.random()<M.L.exact*(g?.6:1);
+ const t={id,p:p||0,v:l.v*(g?GOLDF:1),exact:ex,gold:g,uid:++M.uid,shake:0};
+ // keep the array ordered oldest (furthest along) first
+ if(p){let i=0;while(i<l.tiles.length&&l.tiles[i].p>p)i++;l.tiles.splice(i,0,t)}else l.tiles.push(t);
+ M.seen[id]=(M.seen[id]||0)+1;if(g)M.goldN++;return t;}
+function laneStep(l,dt2){for(const t of l.tiles){t.p+=t.v*dt2;if(t.shake>0)t.shake-=dt2}
+ l.tiles=l.tiles.filter(t=>t.p<l.len+l.size+4);
+ if(!l.next)l.next=pick(l,false);const last=l.tiles[l.tiles.length-1];let need=l.size+l.gap;
+ if(ING[l.next].tier==='gold'){const Lt=l.len+l.size;need=Math.max(need,Lt-(Lt-l.size)/GOLDF+6)}
+ if(!last||last.p>=need){spawn(l,l.next,0);l.next=null;l.gap=rnd(18,60);}}
+function tileRect(l,t){if(l.axis==='x'){const y=l.y+20;const x=l.dir==='right'?l.x-TW+t.p:l.x+l.w-t.p;return {x,y,w:TW,h:TH}}
+ return {x:l.x+(l.w-TW)/2,y:l.y-TH+t.p,w:TW,h:TH};}
+function canAfford(t){const pr=ING[t.id].price;return t.exact?!!findPay(M.wallet,pr,true):wTotal(M.wallet)>=pr}
+function drawLaneBg(c,l){c.save();rr(c,l.x,l.y,l.w,l.h,12);const f=l.cfg.frame;
+ c.fillStyle=f==='produce'?'#d9eccf':f==='dry'?'#d6e2f6':f==='itaewon'?'#f8dcc0':'#e8cfa4';c.fill();c.clip();
+ if(f==='none'){c.strokeStyle='rgba(120,80,40,.18)';c.lineWidth=2;c.beginPath();for(let y=l.y+10;y<l.y+l.h;y+=16){c.moveTo(l.x,y);c.lineTo(l.x+l.w,y)}c.stroke();}
+ else if(f==='produce'){for(let i=0;i<60;i++)el(c,l.x+(i*53)%l.w,l.y+(i*31)%l.h,7,3,i,'rgba(47,125,58,.18)')}
+ else if(f==='dry'){c.strokeStyle='rgba(47,95,184,.16)';c.lineWidth=1.5;c.beginPath();for(let x=l.x;x<l.x+l.w;x+=14){c.moveTo(x,l.y);c.lineTo(x,l.y+l.h)}for(let y=l.y;y<l.y+l.h;y+=14){c.moveTo(l.x,y);c.lineTo(l.x+l.w,y)}c.stroke()}
+ else{c.strokeStyle='rgba(199,90,18,.18)';c.lineWidth=6;c.beginPath();for(let x=l.x-l.h;x<l.x+l.w;x+=18){c.moveTo(x,l.y+l.h);c.lineTo(x+l.h,l.y)}c.stroke()}
+ c.fillStyle='rgba(0,0,0,.12)';const n=l.axis==='x'?Math.floor(l.w/70):Math.floor(l.h/70);
+ for(let i=0;i<n;i++){c.save();if(l.axis==='x'){c.translate(l.x+35+i*70,l.y+l.h-3);if(l.dir==='left')c.scale(-1,1)}else{c.translate(l.x+6,l.y+35+i*70);c.rotate(Math.PI/2)}
+  c.beginPath();c.moveTo(-6,-3);c.lineTo(4,0);c.lineTo(-6,3);c.closePath();c.fill();c.restore()}
+ c.restore();}
+function laneLabel(c,l){const f=l.cfg.frame,t2=l.cfg.name;c.save();c.font=`900 10px ${FONT}`;const w=c.measureText(t2).width+(f==='none'?12:26);
+ let x=l.x+6,y=l.y+3;if(l.axis==='y'){c.translate(l.x+l.w-2,l.y+6);c.rotate(Math.PI/2);x=0;y=0}
+ rr(c,x,y,w,15,7);c.fillStyle=f==='produce'?'#2f7d3a':f==='dry'?'#2f5fb8':f==='itaewon'?'#c75a12':'rgba(90,50,20,.75)';c.fill();
+ c.fillStyle='#fff';
+ if(f==='produce')el(c,x+10,y+7.5,5,2.6,-.6,'#fff');
+ else if(f==='dry'){c.fillRect(x+5,y+3.5,9,8);c.fillStyle='#2f5fb8';c.fillRect(x+9,y+3.5,1,8);c.fillRect(x+5,y+7,9,1)}
+ else if(f==='itaewon'){c.beginPath();c.moveTo(x+10,y+2.5);c.lineTo(x+15,y+7.5);c.lineTo(x+10,y+12.5);c.lineTo(x+5,y+7.5);c.closePath();c.fill()}
+ c.fillStyle='#fff';c.textAlign='left';c.textBaseline='middle';c.fillText(t2,x+(f==='none'?6:19),y+8);c.restore();}
+function drawMarket(){const c=mctx,d=DPR()*M.k;c.setTransform(d,0,0,d,0,0);c.clearRect(0,0,M.W,M.H);const tm=now()/1000;
+ for(const l of M.lanes){drawLaneBg(c,l);c.save();rr(c,l.x,l.y,l.w,l.h,12);c.clip();const f=l.cfg.frame;
+  for(const t of l.tiles){const R=tileRect(l,t),ox=t.shake>0?Math.sin(t.shake*60)*4:0,X=R.x+ox;
+   if(t.gold){c.save();c.shadowColor='#ffcc00';c.shadowBlur=SV.reduced?14:12+8*Math.sin(tm*6);framePath(c,f,X,R.y,TW,TH);c.fillStyle='#ffd23f';c.fill();c.restore()}
+   c.drawImage(sprite(t.id,f,M.k),X-4,R.y-4,TW+8,TH+8);
+   const ok=canAfford(t);
+   if(t.exact){const bx=X+TW-47,by=R.y+4;rr(c,bx,by,43,17,8);c.fillStyle=ok?'#ffe066':'#4b5563';c.fill();c.strokeStyle=ok?'#7a5c00':'#1f2937';c.lineWidth=1.2;c.stroke();
+    dt(c,[[bx+8.5,by+8.5]],ok?'#c99a00':'#9ca3af',5.5);tx(c,'₩',bx+8.5,by+8.5,7,'#fff',900);tx(c,ok?'EXACT':'EXACT ✕',bx+27,by+8.5,7.5,ok?'#3b2a00':'#fff',900);
+    if(!ok){c.fillStyle='rgba(255,255,255,.35)';framePath(c,f,X,R.y,TW,TH);c.fill()}}
+   else if(!ok){c.fillStyle='rgba(255,255,255,.55)';framePath(c,f,X,R.y,TW,TH);c.fill();rr(c,X+TW/2-31,R.y+ARTH-20,62,16,8);c.fillStyle='#a23b2a';c.fill();tx(c,'NOT ENOUGH',X+TW/2,R.y+ARTH-12,8,'#fff',900)}
+  }c.restore();laneLabel(c,l);}
+ for(const fl of M.flyers){const k=clamp(fl.t/.45,0,1),e=1-(1-k)*(1-k);const x=fl.x+(fl.tx-fl.x)*e,y=fl.y+(fl.ty-fl.y)*e,s=1-.6*e;c.globalAlpha=1-k*.5;
+  c.drawImage(sprite(fl.id,'none',M.k),x-(TW+8)*s/2,y-(TH+8)*s/2,(TW+8)*s,(TH+8)*s);c.globalAlpha=1}}
+function focusExact(){let best=null,bd=1e9;for(const l of M.lanes)for(const t of l.tiles){if(!t.exact)continue;const R=tileRect(l,t);
+  const cx=R.x+TW/2,cy=R.y+TH/2;if(cx<l.x||cx>l.x+l.w||cy<l.y||cy>l.y+l.h)continue;const dd=l.axis==='x'?Math.abs(cx-(l.x+l.w/2)):Math.abs(cy-(l.y+l.h/2));if(dd<bd){bd=dd;best=t}}
+ let use=null,key='';if(best){const p=findPay(M.wallet,ING[best.id].price,true);if(p){use=p.use;key=best.uid+':'+JSON.stringify(use)}else key=best.uid+':x'}
+ key+='|'+JSON.stringify(M.wallet);if(key!==M.focusKey){M.focusKey=key;renderWallet(use,best)}}
+function renderWallet(use,ft){const w=M.wallet;let h=`<span class="tot">${won(wTotal(w))}</span>`;
+ for(const d of DEN){const n=w[d]||0;if(!n)continue;const hl=use&&use[d]>0;
+  h+=`<span class="chip ${d>=1000?'note':'coin'}${hl?' hl':''}">${won(d)}×${n}${hl?` <span class="need">use ${use[d]}</span>`:''}</span>`}
+ if(ft)h+=use?`<span class="chip hl">EXACT ${won(ING[ft.id].price)} ✓</span>`:`<span class="chip" style="background:#eee;color:#555">No coins for ${won(ING[ft.id].price)}</span>`;
+ $('#wallet').innerHTML=h;}
+function renderBasket(bounceIdx){const S=$('#slots');S.innerHTML='';for(let i=0;i<5;i++){const b=document.createElement('button');b.className='slot';const it=M.basket[i];
+  if(it){b.classList.add('filled');b.setAttribute('aria-label',`${ING[it.id].name}. Tap to put it back.`);b.appendChild(tileCanvas(it.id,false));
+   b.onclick=()=>unbuy(i);if(i===bounceIdx&&!SV.reduced)b.classList.add('bounce')}
+  else{b.textContent=i+1;b.setAttribute('aria-label','Empty basket slot');b.tabIndex=-1}S.appendChild(b)}
+ $('#b-cook').classList.toggle('pulse',M.basket.length>=5&&!SV.reduced);}
+function buy(l,t){const I=ING[t.id];
+ if(M.basket.length>=5){toast('Basket is full (5). Tap a slot to put one back, or Go cook!');SFX.err();t.shake=.3;return}
+ const pay=findPay(M.wallet,I.price,t.exact);
+ if(!pay){SFX.err();t.shake=.3;toast(t.exact?`This seller needs exact change: ${won(I.price)}. You don't have those coins.`:`Not enough money for ${I.name} (${won(I.price)}).`,2800);return}
+ for(const d of DEN)M.wallet[d]-=pay.use[d];addMoney(M.wallet,pay.s-I.price);
+ M.basket.push({id:t.id,price:I.price});const R=tileRect(l,t);l.tiles=l.tiles.filter(x=>x!==t);
+ M.flyers.push({id:t.id,x:R.x+TW/2,y:R.y+TH/2,tx:M.W*(M.basket.length-.5)/6,ty:M.H+30,t:0});
+ SFX.clink();SFX.bounce();const fresh=!SV.recipes[t.id];SV.recipes[t.id]=1;persist();
+ toast(`+ ${I.name} · ${won(I.price)}${pay.s>I.price?` · change ${won(pay.s-I.price)}`:''}${fresh?' · 📖 new card!':''}`);say(`Bought ${I.name}`);
+ renderBasket(M.basket.length-1);M.focusKey='';
+ if(M.basket.length>=5)setTimeout(()=>{if(M&&!M.ended)toast('Basket full! Tap Go cook 🍲',3000)},1300);}
+function unbuy(i){if(!M||M.ended)return;const it=M.basket.splice(i,1)[0];addMoney(M.wallet,it.price);SFX.bounce();toast(`Put back ${ING[it.id].name}, refunded ${won(it.price)}.`);renderBasket();M.focusKey='';}
+function setStage(s){if(s===M.stage)return;M.stage=s;const t2=M.relaxed?(s===0?'Landed! No rush, I\'m having tea at the airport café ☕':M.L.texts[3]):M.L.texts[s];
+ $('#mtxt').textContent=t2;const tr=$('#trip').children;for(let i=0;i<3;i++)tr[i].className=M.relaxed?'':(i<s?'on':i===s?'now':'');$('#trip').style.visibility=M.relaxed?'hidden':'visible';
+ if(s>0)SFX.ping();faceCanvas($('#mface'),0);}
+function loop(){if(!M||M.ended)return;const tn=now();const dt2=Math.min(.05,(tn-M.last)/1000);M.last=tn;
+ if(!M.paused){M.t+=dt2;for(const l of M.lanes)laneStep(l,dt2);M.flyers.forEach(f=>f.t+=dt2);M.flyers=M.flyers.filter(f=>f.t<.45);
+  if(!M.relaxed){const k=M.t/M.dur;setStage(k>=1?3:k>=.8?2:k>=.45?1:0);if(k>=1){drawMarket();endShopping('time');return}}
+  focusExact();drawMarket();}
+ raf=requestAnimationFrame(loop);}
+mcv.addEventListener('pointerdown',e=>{if(!M||M.ended||M.paused)return;e.preventDefault();ac();const r=mcv.getBoundingClientRect(),x=(e.clientX-r.left)/M.k,y=(e.clientY-r.top)/M.k;
+ let best=null,bd=1e9;const pad=e.pointerType==='mouse'?8:16;
+ for(const l of M.lanes){if(x<l.x-pad||x>l.x+l.w+pad||y<l.y-pad||y>l.y+l.h+pad)continue;for(const t of l.tiles){const R=tileRect(l,t);
+  if(x>=R.x-pad&&x<=R.x+R.w+pad&&y>=R.y-pad&&y<=R.y+R.h+pad){const dd=Math.hypot(x-R.x-TW/2,y-R.y-TH/2);if(dd<bd){bd=dd;best=[l,t]}}}}
+ if(best)buy(best[0],best[1]);});
+function endShopping(reason){if(!M||M.ended)return;M.ended=true;cancelAnimationFrame(raf);ambStop();
+ if(reason==='time'){SFX.ping();modal(`<h2>Mama is here! 🚕</h2><p>${M.basket.length?'No more shopping. Time to cook what you have!':'Your basket is empty… Mama is at the door anyway.'}</p><button class="gold" id="mc-c" style="width:100%">${M.basket.length?'Cook!':'Open the door'}</button>`,b=>b.querySelector('#mc-c').onclick=()=>{closeModal();afterShop()});}
+ else afterShop();}
+function afterShop(){if(M.basket.length)startCook();else{M.S=0;goTaste()}}
+$('#b-cook').onclick=()=>{if(!M||M.ended)return;if(!M.basket.length){M.paused=true;modal(`<h2>Empty basket</h2><p>You haven't bought anything yet. Go home with nothing?</p><div class="row"><button class="alt grow" id="mc-n">Keep shopping</button><button class="grow" id="mc-y">Go home</button></div>`,b=>{b.querySelector('#mc-n').onclick=()=>{closeModal();resume()};b.querySelector('#mc-y').onclick=()=>{closeModal();endShopping('done')}});return}endShopping('done')};
+function pause(){if(!M||M.ended||M.paused)return;M.paused=true;
+ modal(`<h2>Paused</h2><div class="col"><button class="gold" id="p-r">Resume</button><button class="alt" id="p-s">Settings</button><button class="alt" id="p-re">Restart level</button><button class="alt" id="p-q">Quit to levels</button></div>`,b=>{
+  b.querySelector('#p-r').onclick=()=>{closeModal();resume()};b.querySelector('#p-s').onclick=()=>settings(true);b.querySelector('#p-re').onclick=()=>{const n=M.n;closeModal();startLevel(n)};b.querySelector('#p-q').onclick=()=>{closeModal();goLevels()}});}
+function resume(){if(!M)return;M.paused=false;M.last=now();}
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(curScreen==='s-market')pause();if(curScreen==='s-cook'&&CK&&!CK.done&&!CK.paused)cookPause();}});
+function onResize(){if(curScreen==='s-market'&&M&&!M.ended&&M.W){layoutMarket(false);drawMarket()}if(curScreen==='s-cook'&&CK&&!CK.done)sizeCook();}
+window.addEventListener('resize',onResize);
+if(window.ResizeObserver){new ResizeObserver(onResize).observe($('#mcv'));new ResizeObserver(onResize).observe($('#ccv'));}
+
+/* ================= COOKING (3-round rhythm) ================= */
+const ccv=$('#ccv'),cctx=ccv.getContext('2d');let CK=null;
+const ROUNDS=[{name:'Pound',hint:'Tap to pound, on the beat.',sfx:'thud'},{name:'Turn',hint:'Swipe or tap to turn the dough, on the beat.',sfx:'whoosh'},{name:'Add water',hint:'Tap to add a splash, on the beat.',sfx:'splash'}];
+const BEATS=6;
+function sizeCook(){const r=ccv.getBoundingClientRect(),d=DPR();ccv.width=Math.round(r.width*d);ccv.height=Math.round(r.height*d);if(CK){CK.W=r.width;CK.H=r.height}}
+function startCook(){show('s-cook');$('#cookhelp').textContent=(SV.reduced?'Tap when the gold dial fills up and flashes green.':'Tap when the white ring meets the gold circle.')+' Steady beats make smooth fufu. Rushing makes lumps.';const bi=M.L.beat*(M.relaxed?1.15:1);CK={bi,round:-1,scores:[],extra:0,fx:[],pest:0,done:false,paused:false};sizeCook();nextRound();requestAnimationFrame(cookLoop);}
+function nextRound(){CK.round++;if(CK.round>=3){finishCook();return}const R=ROUNDS[CK.round];$('#cround').textContent=`Round ${CK.round+1} of 3 · ${R.name}`;$('#chint').textContent=R.hint;
+ const t0=now()+300;CK.lead=[t0,t0+CK.bi];CK.beats=[];for(let i=0;i<BEATS;i++)CK.beats.push({t:t0+CK.bi*(2+i),j:null});CK.ticked=-1;say(`Round ${CK.round+1}: ${R.name}. ${R.hint}`);}
+const WIN=()=>Math.min(340,CK.bi*.42);
+function cookTap(){if(!CK||CK.done||CK.paused||CK.round>2)return;ac();const tn=now();const R=ROUNDS[CK.round];SFX[R.sfx]();CK.pest=1;
+ if(tn<CK.beats[0].t-CK.bi*.5){CK.fx.push({label:'Wait for the ring…',col:'#f2d8b8',t:tn});return}
+ let best=null,bd=1e9;for(const b of CK.beats){if(b.j!==null)continue;const dd=Math.abs(tn-b.t);if(dd<bd){bd=dd;best=b}}
+ if(best&&bd<=WIN()){const sc=bd<110?1:bd<210?.7:.4;best.j=sc;CK.scores.push(sc);CK.fx.push({label:sc===1?'Perfect!':sc>=.7?'Good':'Close',col:sc===1?'#7CFC9A':sc>=.7?'#ffe066':'#ffb366',t:tn});}
+ else{CK.extra++;CK.fx.push({label:'Rushed! Lumps!',col:'#ff7a7a',t:tn});}}
+ccv.addEventListener('pointerdown',e=>{e.preventDefault();cookTap();});
+document.addEventListener('keydown',e=>{if(curScreen==='s-cook'&&(e.code==='Space'||e.code==='Enter')&&!$('#modal').classList.contains('on')){e.preventDefault();cookTap()}if(e.code==='Escape'&&curScreen==='s-market')pause();});
+function cookPause(){CK.paused=true;const pt=now();modal(`<h2>Paused</h2><p>The pot can wait a moment.</p><button class="gold" id="cp" style="width:100%">Resume</button>`,b=>b.querySelector('#cp').onclick=()=>{closeModal();const sh=now()-pt;CK.beats.forEach(x=>x.t+=sh);CK.lead=CK.lead.map(x=>x+sh);CK.paused=false;});}
+function smoothNow(){const judged=CK.scores.length;if(!judged)return 1;const sum=CK.scores.reduce((a,b)=>a+b,0);return clamp(sum/judged-.05*CK.extra,0,1);}
+function cookLoop(){if(!CK||CK.done)return;const tn=now();
+ if(!CK.paused){
+  CK.lead.forEach((t,i)=>{if(tn>=t&&CK.ticked<i){CK.ticked=i;SFX.tick()}});
+  CK.beats.forEach((b,i)=>{if(tn>=b.t&&CK.ticked<2+i){CK.ticked=2+i;SFX.tick()}if(b.j===null&&tn>b.t+WIN()){b.j=0;CK.scores.push(0);CK.fx.push({label:'Missed',col:'#ff9a9a',t:tn});SFX.miss()}});
+  if(tn>CK.beats[BEATS-1].t+500){nextRound();if(CK.done)return}
+  CK.pest=Math.max(0,CK.pest-.12);drawCook(tn);}
+ requestAnimationFrame(cookLoop);}
+function doughColor(){if(!M||!M.basket.length)return '#f4efe2';let r=0,g=0,b=0,n=0;for(const it of M.basket){const h=ING[it.id].flesh;r+=parseInt(h.substr(1,2),16);g+=parseInt(h.substr(3,2),16);b+=parseInt(h.substr(5,2),16);n++}return `rgb(${r/n|0},${g/n|0},${b/n|0})`;}
+function drawDough(c,x,y,rw,rh,col,lumps){el(c,x,y,rw,rh,0,col,'rgba(0,0,0,.15)',1.5);for(let i=0;i<lumps;i++){const a=i*2.1+.4;el(c,x+Math.cos(a)*rw*.55,y+Math.sin(a)*rh*.45-2,rw*.13,rh*.2,0,col,'rgba(0,0,0,.25)',1.2)}
+ el(c,x-rw*.3,y-rh*.35,rw*.25,rh*.14,-.2,'rgba(255,255,255,.5)');}
+function drawCook(tn){const c=cctx,d=DPR(),W=CK.W,H=CK.H;c.setTransform(d,0,0,d,0,0);c.clearRect(0,0,W,H);
+ const cx=W/2,R=clamp(Math.min(W,H)*.1,30,50),ty=R*1.9+6;
+ c.beginPath();c.arc(cx,ty,R,0,7);c.fillStyle='rgba(255,255,255,.08)';c.fill();c.lineWidth=5;c.strokeStyle='#ffd23f';c.stroke();
+ const nb=CK.beats.find(b=>b.j===null);
+ if(nb){const k=(nb.t-tn)/CK.bi;
+  if(SV.reduced){if(k<1){c.beginPath();c.moveTo(cx,ty);c.arc(cx,ty,R-6,-Math.PI/2,-Math.PI/2+Math.PI*2*clamp(1-k,0,1));c.closePath();c.fillStyle=Math.abs(k)<.15?'rgba(124,252,154,.6)':'rgba(255,210,63,.45)';c.fill()}}
+  else if(k<1.2&&k>-.2){c.beginPath();c.arc(cx,ty,R*(1+1.25*clamp(k,0,1.2)),0,7);c.lineWidth=4;c.strokeStyle=Math.abs(k)<.15?'#7CFC9A':'#fff';c.stroke()}}
+ const lead=tn<CK.beats[0].t-CK.bi*.5;
+ tx(c,lead?(tn<CK.lead[0]?'Ready…':tn<CK.lead[1]?'2':'1'):ROUNDS[CK.round].name.toUpperCase(),cx,ty,lead?R*.55:R*.3,'#fff',900);
+ for(let i=0;i<BEATS;i++){const b=CK.beats[i];dt(c,[[cx-(BEATS-1)*9+i*18,ty+R+22]],b.j===null?'rgba(255,255,255,.25)':b.j>=1?'#7CFC9A':b.j>=.7?'#ffe066':b.j>0?'#ffb366':'#ff7a7a',5)}
+ const mw=Math.min(W*.42,H*.34,180),my=Math.min(H-mw*.62,H*.55+mw*.4);const lumps=Math.round((1-smoothNow())*7);
+ c.fillStyle='#7a4a24';c.beginPath();c.moveTo(cx-mw/2,my-mw*.32);c.lineTo(cx+mw/2,my-mw*.32);c.lineTo(cx+mw*.34,my+mw*.3);c.lineTo(cx-mw*.34,my+mw*.3);c.closePath();c.fill();
+ c.fillStyle='#5e3818';c.fillRect(cx-mw*.42,my-mw*.06,mw*.84,mw*.07);c.fillRect(cx-mw*.38,my+mw*.12,mw*.76,mw*.06);
+ el(c,cx,my-mw*.32,mw/2,mw*.1,0,'#4a2a12');drawDough(c,cx,my-mw*.34,mw*.38,mw*.09,doughColor(),lumps);
+ const rd=CK.round;
+ if(rd===0){const py=my-mw*.36-mw*.7+CK.pest*mw*.3;rr(c,cx-mw*.07,py,mw*.14,mw*.7,mw*.07);c.fillStyle='#b07a44';c.fill();c.strokeStyle='#6b4420';c.lineWidth=2;c.stroke()}
+ else if(rd===1){c.save();c.translate(cx,my-mw*.36);c.rotate(-.5+CK.pest*1.0);rr(c,-6,-mw*.6,12,mw*.6,6);c.fillStyle='#c48a4e';c.fill();c.strokeStyle='#6b4420';c.lineWidth=2;c.stroke();c.restore()}
+ else{c.save();c.translate(cx+mw*.35,my-mw*.7);c.rotate(.6*CK.pest);fp(c,'M-22 -18 L22 -18 L18 18 L-18 18Z','#4a90c8','#2a5a84',2);c.restore();if(CK.pest>.3)dt(c,[[cx+mw*.2,my-mw*.5,4],[cx+mw*.1,my-mw*.45,3],[cx+mw*.15,my-mw*.4,3.5]],'#9ad0ff')}
+ tx(c,lumps===0?'Smooth':lumps<3?'A few lumps':'Lumpy!',cx,my+mw*.46,13,'#f2d8b8',700);
+ CK.fx=CK.fx.filter(f=>tn-f.t<700);const f=CK.fx[CK.fx.length-1];if(f){const k=(tn-f.t)/700;c.globalAlpha=1-k;tx(c,f.label,cx,ty+R+52-(SV.reduced?0:k*14),20,f.col,900);c.globalAlpha=1}}
+function finishCook(){CK.done=true;const sum=CK.scores.reduce((a,b)=>a+b,0);M.S=clamp(sum/(3*BEATS)-.05*CK.extra,0,1);M.extra=CK.extra;setTimeout(goTaste,350);}
+
+/* ================= EVALUATION =================
+   Ingredients decide pull + taste; cooking decides smoothness. Duplicates count less each time
+   (1, 1/2, 1/4…), and a blend of two or three good starches earns a bonus, so balance beats stacking gold. */
+function evaluate(){const B=M.basket.map(b=>b.id),S=M.S||0;const R={S,empty:!B.length,ids:B};
+ if(!B.length){Object.assign(R,{H:0,react:1,P:0,T:0,lines:['The pot is empty. Just hot water and hope.'],sub:'She hugs you anyway. "Come. Tomorrow we go to the market together."',tip:'Even a regular Korean market sells potato starch and Korean yam (ma). Together they make a decent swallow.'});return R}
+ const cnt={},con={};let W=0,P=0,T=0;
+ for(const id of B){const n=cnt[id]=(cnt[id]||0)+1,w=Math.pow(.5,n-1);W+=w;P+=w*ING[id].pull;T+=w*ING[id].taste;con[id]=(con[id]||0)+w}
+ P/=W;T/=W;const fr=ids=>ids.reduce((s,i)=>s+(con[i]||0),0)/W;
+ const sweet=fr(['sweetpot']),gluey=fr(['tapioca']),chewy=fr(['glutinous']),tteok=fr(['tteok']),beany=fr(['bean']),jelly=fr(['kudzu']),pot=fr(['potato']);
+ const diffIds=['wheat','semolina','garri'],diff=fr(diffIds);
+ const distinct=Object.keys(cnt).filter(i=>(ING[i].tier==='gold'||ING[i].tier==='good')&&ING[i].pull+ING[i].taste>=4).length;
+ if(sweet>.34)T-=.6;if(beany>0)T-=3.6*beany;
+ if(gluey>=.5)P=Math.min(P,1.6);if(chewy>=.5)P=Math.min(P,2);if(jelly>=.5)P=Math.min(P,1.5);if(tteok>=.4)P=Math.min(P,1.5);
+ P=clamp(P,0,3);T=clamp(T,0,3);
+ const enough=Math.min(1,W/1.75),bal=distinct>=3?.18:distinct>=2?.12:0;
+ const top=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0],mono=Object.keys(cnt).length===1&&cnt[top]>=3&&(ING[top].tier==='gold'||ING[top].tier==='good');
+ const domDiff=diff>=.5?diffIds.reduce((a,i)=>(con[i]||0)>(con[a]||0)?i:a,'wheat'):null;
+ let Q=clamp(((P/3)*.5+(T/3)*.5)*enough*.85+bal-(mono?.08:0),0,1);if(domDiff)Q=Math.max(Q,.7*enough);
+ const H=Q*(.35+.65*S);
+ let react=H<.35?1:H<.55?2:H<.78?3:4;
+ if(domDiff)react=Math.min(react,3);
+ const L=[];
+ if(domDiff)L.push(domDiff==='garri'?'This is eba. Grainy, a little sour. Garri is roasted cassava.':domDiff==='semolina'?'This is semo. Smooth and mild.':'This is wheat meal. Firm and a little nutty.');
+ if(gluey>=.5)L.push('It pulls… and pulls. Close, but too gluey.');
+ else if(tteok>=.4)L.push('It\'s chewy and springy, like a rice cake. Fufu should be soft.');
+ else if(jelly>=.5)L.push('It wobbles like jelly instead of pulling.');
+ else if(chewy>=.5)L.push('Very stretchy, but chewy like mochi.');
+ else L.push(P>=2.5?'It pulls. It pulls well.':P>=1.7?'It stretches a little when you pull it.':P>=.8?'It breaks. Fufu should pull, not snap.':'It won\'t hold together at all.');
+ L.push(S>=.8?'Smooth, no lumps.':S>=.5?'Mostly smooth, with a few small lumps.':'Lumpy. The pounding was rushed.');
+ if(beany>0)L.push('Something beany in here… that\'s a different dish.');
+ else if(sweet>.34)L.push('But it\'s sweet? What did you put in?');
+ else if(!domDiff)L.push(T>=2.4?'It tastes like home.':T>=1.5?'The taste is close, a little plain.':'The taste is off.');
+ if(W<1.5)L.push('And… there isn\'t much of it.');
+ let sub='',tip='';
+ if(domDiff){sub=domDiff==='garri'?'"Eba! It\'s not fufu, but eba I will eat."':domDiff==='semolina'?'"Semo! Not fufu, but I won\'t complain."':'"Wheat meal! Not fufu, but it\'s a real swallow."';
+  tip='Eba, semo and wheat meal are real swallows, but fufu is its own thing: in much of Nigeria it means soaked, fermented cassava. Pounded yam (iyan) is another favorite.';}
+ else if(beany>0)tip='Bean flour is for moin moin and akara, my child, not swallow. Keep it for breakfast.';
+ else if(S<.5)tip='Pound steadily, my child. Don\'t rush. Lumps come from hurry.';
+ else if(tteok>=.4)tip='Tteok is pounded too, but it sets firm and chewy. Fufu has to stay soft enough to swallow.';
+ else if(gluey>=.5)tip='Tapioca starch is cassava, yes, but only the starch. Alone it goes gummy. Mix it with something that has body, like yam.';
+ else if(sweet>.34)tip='Sweet potato is lovely roasted, but it makes fufu sweet. Use just a little.';
+ else if(jelly>=.5)tip='Kudzu starch makes lovely jelly. For fufu, blend it with a yam or taro.';
+ else if(chewy>=.5)tip='Glutinous rice flour stretches well, but alone it is chewy like mochi. Blend it with yam or potato starch.';
+ else if(pot>=.5)tip='Plain potato won\'t pull. Abroad, cooks mix potato flakes with potato starch for the stretch.';
+ else if(mono)tip=`All ${ING[top].name.toLowerCase()}! Good choice, but you spent everything on one thing. Fufu is often a blend, like cassava with plantain, and a blend stretches your money too.`;
+ else if(enough<1)tip='One little pot won\'t feed us both. Bring enough to fill the mortar.';
+ else if(P<1.7)tip='Fufu needs starch that pulls. Potato starch or Korean yam (ma) would help.';
+ else if(T<1.5)tip='Add a real tuber for flavor. Korean yam (ma) or taro (toran) is close to home.';
+ else if(distinct<2)tip='Many cooks blend: cassava with plantain, or potato flakes with potato starch. One thing alone is flat.';
+ else if(react===4)tip='You listened! Next time make egusi or okra soup to go with it, and I\'ll stay a whole month.';
+ else tip='Good choices. Steady pounding and a blend of tubers and starch will get you all the way.';
+ if(!sub)sub=react===1?'(She sits quietly for a long moment, then pats your hand.)':react===2?'She tears a piece, squeezes it, tilts her head.':react===3?'She smiles and takes a second bite.':'She closes her eyes after the first bite. ⭐';
+ Object.assign(R,{H,react,P,T,Q,W,distinct,lines:L,sub,tip,domDiff});return R;}
+
+/* ================= TASTE / MAMA / RESULTS ================= */
+let RES=null;const LINES=['','Ah. My child.','So-so.','Good try, my child.','Yes, my child, you listened.'];
+function goTaste(){show('s-taste');RES=evaluate();drawPlate($('#tcv'));const box=$('#sents');box.innerHTML='';
+ RES.lines.forEach((l,i)=>setTimeout(()=>{const d=document.createElement('div');d.className='sent';d.textContent=l;box.appendChild(d)},SV.reduced?0:250+i*650));}
+function drawPlate(cv){const d=DPR();if(!cv._w){cv._w=300;cv._h=190;cv.style.width='300px';cv.style.height='190px';cv.width=300*d;cv.height=190*d;cv._d=d}const c=cv.getContext('2d');c.setTransform(cv._d,0,0,cv._d,0,0);c.clearRect(0,0,300,190);
+ el(c,140,140,112,30,0,'#fff','#d9c3a8',3);el(c,140,140,84,20,0,'#f5ede0');
+ if(!RES.empty)drawDough(c,140,112,60,40,doughColor(),Math.round((1-RES.S)*7));
+ else{sp(c,'M125 110 C115 90 135 80 125 60','rgba(150,130,110,.5)',3);sp(c,'M158 110 C148 90 168 80 158 60','rgba(150,130,110,.5)',3)}
+ el(c,258,150,34,12,0,'#7a3b12');el(c,258,146,30,9,0,RES.empty?'#c9b9a3':'#d4881a');}
+function goMom(){show('s-mom');const R=RES;faceCanvas($('#momface'),R.react===1?0:R.react);$('#say').textContent=R.react===1?'…':'';
+ ['#saysub','#tip','#resbox','#missed'].forEach(s=>$(s).innerHTML='');$('#b-retry').style.visibility=$('#b-next').style.visibility=$('#b-share').style.visibility='hidden';
+ const reveal=()=>{if(curScreen!=='s-mom')return;faceCanvas($('#momface'),R.react);$('#say').textContent=(R.react===4?'⭐ ':R.react===3?'😊 ':'')+LINES[R.react];$('#saysub').textContent=R.sub;
+  $('#tip').innerHTML='<b>Mama\'s tip:</b> '+R.tip;say(LINES[R.react]+' '+R.tip);if(R.react===4)SFX.chime();else if(R.react===1)SFX.sad();results();
+  $('#b-retry').style.visibility=$('#b-next').style.visibility=$('#b-share').style.visibility='visible';};
+ setTimeout(reveal,R.react===1?(SV.reduced?900:2200):(SV.reduced?0:450));}
+function results(){const R=RES,n=M.n;const stars=1+(R.react>=3?1:0)+(R.react===4?1:0);
+ const left=M.relaxed?0:Math.max(0,M.dur-M.t);const score=Math.round(R.H*1000)+(M.relaxed||R.empty?0:Math.round(left*3));R.score=score;R.stars=stars;
+ const prev=SV.best[n],newBest=prev===undefined||score>prev;if(newBest)SV.best[n]=score;SV.stars[n]=Math.max(SV.stars[n]||0,stars);SV.faces[R.react]=1;SV.unlocked=Math.max(SV.unlocked,Math.min(3,n+1));persist();
+ $('#resbox').innerHTML=`<div style="font-size:1.6rem">${starsHTML(stars)}</div><div><b>Score ${score}</b> · ${newBest?'<span class="pill">New best!</span>':`Best ${SV.best[n]}`}</div><small class="muted">${M.relaxed?'Relaxed mode, no time bonus':R.empty?'No time bonus for an empty pot':left<1?'Mama arrived before you finished, so no time bonus':`Includes a time bonus for ${Math.round(left)}s to spare`}. There's no fail, just Mama's face.</small>`;
+ const inB=new Set(M.basket.map(b=>b.id)),val=i=>ING[i].pull+ING[i].taste+(ING[i].tier==='gold'?1.5:0);
+ const cand=Object.keys(M.seen).filter(i=>!inB.has(i)&&(ING[i].tier==='gold'||ING[i].tier==='good')).sort((a,b)=>val(b)-val(a)).slice(0,3);
+ let h='<b>What you missed:</b><ul style="margin:6px 0 0;padding-left:20px">';
+ cand.forEach(i=>{h+=`<li>${ING[i].tier==='gold'?'★ ':''}<b>${ING[i].name}</b> went by ${M.seen[i]}× · ${ING[i].why}</li>`});
+ [...inB].filter(i=>ING[i].tier==='wrong'||ING[i].tier==='decoy').forEach(i=>{h+=`<li>Swap idea: <b>${ING[i].name}</b> → ${i==='potato'?'potato starch':i==='bean'?'Korean yam (ma)':'potato starch + Korean yam'} (${ING[i].name.toLowerCase()}: ${ING[i].why})</li>`});
+ if(h.endsWith('padding-left:20px">'))h+='<li>Nothing! You spotted the good stuff and took it.</li>';
+ $('#missed').innerHTML=h+'</ul>';
+ $('#b-next').style.display=n<3?'':'none';$('#b-next').textContent=`Level ${n+1} →`;}
+$('#b-serve').onclick=goMom;
+$('#b-retry').onclick=()=>startLevel(M.n);
+$('#b-next').onclick=()=>levelCard(Math.min(3,M.n+1));
+$('#b-home').onclick=goTitle;
+$('#b-share').onclick=()=>{const url=shareCard();modal(`<h2>Your result card</h2><div class="share"><img alt="Result card: Mama said ${LINES[RES.react]}" src="${url}"></div><p class="muted" style="font-size:.85rem">If the download doesn't start, long-press or right-click the image to save it.</p>
+ <div class="row"><button class="alt grow" id="sh-x">Close</button><button class="gold grow" id="sh-dl">Download PNG</button></div>`,b=>{b.querySelector('#sh-x').onclick=closeModal;
+ b.querySelector('#sh-dl').onclick=()=>{const a=document.createElement('a');a.href=url;a.download='fufu-for-mama-result.png';document.body.appendChild(a);a.click();a.remove();}})};
+function shareCard(){const R=RES,cv=document.createElement('canvas');cv.width=1200;cv.height=630;const c=cv.getContext('2d');
+ const g=c.createLinearGradient(0,0,1200,630);g.addColorStop(0,'#fff4e0');g.addColorStop(1,'#ffcf94');c.fillStyle=g;c.fillRect(0,0,1200,630);
+ c.fillStyle='#1f7a5a';c.fillRect(0,0,1200,26);c.fillStyle='#f2b632';for(let x=13;x<1200;x+=26){c.beginPath();c.arc(x,13,6,0,7);c.fill()}
+ c.textAlign='left';c.textBaseline='alphabetic';c.fillStyle='#7a2e12';c.font=`900 64px ${FONT}`;c.fillText('Fufu for Mama',56,108);
+ c.fillStyle='#5a3b22';c.font=`700 28px ${FONT}`;c.fillText(`Level ${M.n} · ${LEVELS[M.n].title}${M.relaxed?' · Relaxed':''}`,58,150);
+ const line=LINES[R.react];rr(c,56,178,690,116,24);c.fillStyle='#fff';c.fill();c.fillStyle='#7a2e12';
+ let fs=46;c.font=`900 ${fs}px ${FONT}`;const q=`Mama said: “${line}”`;while(c.measureText(q).width>650&&fs>26){fs-=2;c.font=`900 ${fs}px ${FONT}`}c.fillText(q,80,250+fs*.2);
+ for(let i=0;i<3;i++)drawStar(c,92+i*70,356,28,i<R.stars?'#f5c518':'#e2d6c4',i<R.stars?'#8a6a00':'#c8b8a2',3);
+ c.fillStyle='#2b1a10';c.font=`800 34px ${FONT}`;c.fillText(`Score ${R.score}`,310,368);
+ const B=M.basket.map(b=>b.id);if(B.length)B.forEach((id,i)=>{c.save();c.translate(58+i*124,412);c.scale(1.08,1.08);drawTile(c,id,'none');c.restore()});
+ else{c.fillStyle='#6b5a4c';c.font=`700 28px ${FONT}`;c.fillText('Empty basket… but Mama came anyway.',60,480)}
+ c.fillStyle='rgba(255,255,255,.75)';c.beginPath();c.arc(980,290,190,0,7);c.fill();c.save();c.beginPath();c.arc(980,290,190,0,7);c.clip();drawMom(c,980,300,150,R.react);c.restore();
+ c.textAlign='right';c.fillStyle='#7a2e12';c.font=`800 30px ${FONT}`;c.fillText('What\'s your fufu?',1150,560);
+ c.fillStyle='#5a3b22';c.font=`600 22px ${FONT}`;c.fillText('By Ivy Newton, The African Gourmet',1150,598);
+ try{return cv.toDataURL('image/png')}catch(e){return ''}}
+
+/* ================= RECIPE BOOK / FACES / SETTINGS ================= */
+function book(){const n=ORDER.filter(i=>SV.recipes[i]).length;modal(`<h2>📖 Recipe book <small class="muted">${n}/${ORDER.length}</small></h2><p class="muted" style="margin-top:0">Buy an ingredient to unlock its card.</p><div class="grid" id="bk"></div><button class="alt" id="bk-x" style="width:100%;margin-top:12px">Close</button>`,b=>{
+ const G=b.querySelector('#bk');for(const id of ORDER){const I=ING[id],u=!!SV.recipes[id],d=document.createElement('div');d.className='rcard'+(u?'':' locked');const cv=tileCanvas(id,!u);cv.style.maxWidth='96px';d.appendChild(cv);
+  const t=document.createElement('div');t.innerHTML=u?`<div class="tier" style="color:${TIERCOL[I.tier]}">${TIERNAME[I.tier]}</div><b>${I.name}</b>${I.ko?` <span class="muted">${I.ko}</span>`:''}<div>${I.fact}</div>`:`<div class="tier muted">Locked</div><b>???</b><div class="muted">Find it at the market.</div>`;d.appendChild(t);G.appendChild(d)}
+ b.querySelector('#bk-x').onclick=closeModal;});}
+function faces(){const names=['','A long silence. “Ah. My child.”','“So-so.”','A smile. “Good try, my child.”','A star. “Yes, my child, you listened.”'];
+ modal(`<h2>👩🏾 Mama's faces <small class="muted">${[1,2,3,4].filter(r=>SV.faces[r]).length}/4</small></h2><div class="grid" id="fc"></div><button class="alt" id="fc-x" style="width:100%;margin-top:12px">Close</button>`,b=>{const G=b.querySelector('#fc');
+ for(let r=1;r<=4;r++){const u=!!SV.faces[r],d=document.createElement('div');d.className='rcard center'+(u?'':' locked');const cv=document.createElement('canvas');cv.width=110;cv.height=110;cv.className='face';d.appendChild(cv);
+  if(u)faceCanvas(cv,r);else{const c=cv.getContext('2d');c.fillStyle='#e8dccb';c.beginPath();c.arc(55,58,42,0,7);c.fill();tx(c,'?',55,60,40,'#fff',900)}
+  const t=document.createElement('div');t.innerHTML=u?names[r]:'<span class="muted">Not seen yet</span>';d.appendChild(t);G.appendChild(d)}
+ b.querySelector('#fc-x').onclick=closeModal;});}
+function setMute(m){SV.mute=m;persist();updMute();if(m){ambStop();if(AU.ctx)AU.ctx.suspend()}else{ac();if(curScreen==='s-market'&&M&&!M.ended&&!M.paused)ambStart()}}
+function settings(fromPause){modal(`<h2>Settings</h2>
+ <label class="toggle"><span><b>Sound</b></span><input type="checkbox" id="st-snd" ${SV.mute?'':'checked'}></label>
+ <label class="toggle"><span><b>Reduced motion</b><br><small class="muted">No bounces, pulses or shrinking rings.</small></span><input type="checkbox" id="st-rm" ${SV.reduced?'checked':''}></label>
+ <label class="toggle"><span><b>Relaxed mode</b><br><small class="muted">No clock. Applies from the next level you start.</small></span><input type="checkbox" id="st-rx" ${SV.relaxed?'checked':''}></label>
+ <div class="col" style="margin-top:12px"><button class="gold" id="st-back">${fromPause?'Back to game':'Done'}</button><button class="alt small" id="st-reset">Reset all progress</button></div>
+ <p class="muted center" style="font-size:.8rem">Fufu for Mama · By Ivy Newton, The African Gourmet</p>`,b=>{
+ b.querySelector('#st-snd').onchange=e=>setMute(!e.target.checked);
+ b.querySelector('#st-rm').onchange=e=>{SV.reduced=e.target.checked;persist();applyReduced()};
+ b.querySelector('#st-rx').onchange=e=>{SV.relaxed=e.target.checked;persist();$('#t-relaxed2').checked=SV.relaxed};
+ b.querySelector('#st-back').onclick=()=>{closeModal();if(fromPause)resume()};
+ b.querySelector('#st-reset').onclick=()=>{if(confirm('Reset stars, scores, recipe cards and Mama\'s faces?')){SV=Object.assign(defSave(),{mute:SV.mute,reduced:SV.reduced});persist();closeModal();goTitle()}};});}
+
+function stopAll(){if(M){M.ended=true;cancelAnimationFrame(raf)}ambStop();if(CK)CK.done=true;introTimers.forEach(clearTimeout);introTimers=[];closeModal();}
+
+$('#b-play').onclick=()=>{ac();SV.seenIntro?goLevels():goIntro()};
+$('#b-book').onclick=book;$('#b-faces').onclick=faces;
+$('#b-skip').onclick=goLevels;$('#b-intro-go').onclick=goLevels;
+$('#b-lv-back').onclick=goTitle;$('#b-lv-intro').onclick=goIntro;
+$('#t-relaxed2').onchange=e=>{SV.relaxed=e.target.checked;persist()};
+$('#b-mute').onclick=()=>setMute(!SV.mute);
+$('#b-menu').onclick=()=>{if(curScreen==='s-market'&&M&&!M.ended){if(!M.paused)pause()}else if(curScreen==='s-cook'&&CK&&!CK.done&&!CK.paused)cookPause();else settings(false)};
+
+/* read-only hook used by the automated browser test */
+window.FUFU={state:()=>({screen:curScreen,level:M&&M.n,basket:M?M.basket.map(b=>b.id):[],wallet:M?wTotal(M.wallet):0,ended:!!(M&&M.ended),t:M&&M.t,res:RES&&{react:RES.react,stars:RES.stars,score:RES.score,S:RES.S}}),
+ tiles:()=>{if(!M)return[];const r=mcv.getBoundingClientRect(),out=[];for(const l of M.lanes)for(const t of l.tiles){const R=tileRect(l,t),cx=R.x+TW/2,cy=R.y+TH/2;
+  if(cx>l.x+20&&cx<l.x+l.w-20&&cy>l.y&&cy<l.y+l.h)out.push({id:t.id,gold:t.gold,exact:t.exact,x:r.left+cx*M.k,y:r.top+cy*M.k})}return out},
+ nextBeat:()=>{if(!CK||CK.done)return null;const b=CK.beats.find(x=>x.j===null);return b?b.t-now():null},cook:()=>CK&&{round:CK.round,done:CK.done},
+ evalBasket:(ids,S)=>{const keep=M;M={basket:ids.map(id=>({id})),S};const r=evaluate();M=keep;return {react:r.react,H:+r.H.toFixed(2),lines:r.lines,sub:r.sub,tip:r.tip}}};
+goTitle();
+})();
+</script>
+</body>
+</html>
